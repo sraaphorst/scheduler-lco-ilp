@@ -1,3 +1,6 @@
+# input_parameters.py
+# By Sebastian Raaphorst, 2020.
+
 from enum import IntEnum
 from typing import List
 from math import ceil
@@ -14,8 +17,8 @@ Priority = int
 # The duration of a timeslot. We use 5 * 60 s = 300 s, or 5 minutes.
 TIMESLOT_LENGTH = 5 * 60
 
-# The number of timeslots per site.
-NUM_TIMESLOTS_PER_SITE = 5
+# The number of timeslots per site. We schedule currently 30 mins per site.
+NUM_TIMESLOTS_PER_SITE = 6
 
 
 class TimeSlot:
@@ -31,21 +34,6 @@ class TimeSlot:
         """
         self.resource = resource
         self.start_time = start_time
-
-    def __lt__(self, other):
-        return self.start_time < other.start_time
-
-    def __gt__(self, other):
-        return self.start_time > other.start_time
-
-    def __eq__(self, other):
-        return self.start_time == other.start_time
-
-    def __repr__(self):
-        return "TimeSlot(%s, %d)" % (self.resource.name, self.start_time)
-
-    def __str__(self):
-        return self.__repr__()
 
 
 # We store the timeslots as a list so we can access it by index and avoid iteration issues.
@@ -80,17 +68,8 @@ def get_time_slot(resource: Resource, index: int, timeslots: TimeSlots) -> TimeS
     return timeslots[resource * NUM_TIMESLOTS_PER_SITE + index]
 
 
-def get_time_slot_index(timeslot: TimeSlot) -> int:
-    """
-    Given a TimeSlot, get its index in the list of TimeSlots.
-    :param timeslot: a TimeSlot that must be from the list of TimeSlots
-    :return: the index of said timeslot, or a meaningless value if the timeslot does not exist
-    """
-    return timeslot.resource * NUM_TIMESLOTS_PER_SITE + timeslot.start_time // TIMESLOT_LENGTH
-
-
 class Observation:
-    def __init__(self, priority: Priority, observation_length: int, start_slots: List[int]):
+    def __init__(self, priority: Priority, observation_length: int, start_slot_idxs: List[int]):
         """
         Basic representation of an observation.
         In this scenario, observations cannot be interrupted, i.e. they must be completed entirely within
@@ -98,43 +77,16 @@ class Observation:
 
         :param priority: the priority of the observation: higher priority observations are more likely to be scheduled
         :param observation_length: the length of the observation, in seconds
-        :param start_slots: the permissible slots for the observation to start: the observation will consume subsequent
+        :param start_slot_idxs: the permissible slots for the observation to start: the observation will consume subsequent
                             time slots until it is done, i.e. has run for observation_length. These should be indices.
         """
         self.priority = priority
         self.observation_length = observation_length
-        self.start_slots = start_slots
-
-        # How much time has been spent on this observation?
-        self.time_done = 0
+        self.start_slots_idxs = start_slot_idxs
 
         # We calculate the number of time slots necessary to complete the observation.
         # If if cannot be completed in an exact number of time slots, round up through ceil.
         self.needed_timeslots = int(ceil(observation_length / TIMESLOT_LENGTH))
-
-    def is_done(self) -> bool:
-        """
-        Determine if the observation is done.
-        :return: True if done, and False otherwise.
-        """
-        return self.observation_length <= self.time_done
-
-    def incompleted_time(self) -> int:
-        """
-        Return the incomplete time for the observation.
-        This is rather redundant, since we are either doing observations
-        or not doing them.
-        :return: the time remaining for the observation to be completed
-        """
-        return self.observation_length - self.time_done
-
-    def do_work(self, time=TIMESLOT_LENGTH):
-        """
-        Reduce the amount of work needed for this observation by
-        the specified quantity.
-        :param time: the amount of work done, in s
-        """
-        self.time_done += time
 
 
 if __name__ == '__main__':

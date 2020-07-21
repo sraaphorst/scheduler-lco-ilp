@@ -203,11 +203,9 @@ def print_observations(obs: Observations):
         for slot_idx in obs.start_slot_idx[idx]:
             site, site_slot = divmod(slot_idx, NUM_TIMESLOTS_PER_SITE)
             ss.append("%s%s" % (Resource(site).name, site_slot))
-        priolen = len("%.4f" % int(obs.priority[idx]))
-        print("%5s  %4s  %7s  %9s  %.4f%s   %s" %
-              (idx, obs.band[idx], int(obs.obs_time[idx]), int(obs.allocated_time[idx]),
-               obs.priority[idx], (" " * (priolenmax - priolen)),
-               ' '.join(ss)))
+        print(f"{idx:>5}  {obs.band[idx]:>4}  {int(obs.obs_time[idx]):>7}  "
+              f"{int(obs.allocated_time[idx]):>9}  {(obs.priority[idx]):>8}  "
+              f"{' '.join(ss)}")
 
 
 if __name__ == '__main__':

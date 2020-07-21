@@ -4,6 +4,7 @@
 
 from __future__ import print_function
 from typing import List, Mapping, Tuple
+from math import ceil
 
 from gurobipy import *
 
@@ -17,7 +18,8 @@ Schedule = Mapping[int, int]
 # The final score for this schedule, based on observation prorities.
 Score = int
 
-def schedule(timeslots: TimeSlots, observations: List[Observation]) -> Tuple[Schedule, Score]:
+
+def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule, Score]:
     """
     Given a set of timeslots and observations as defined in input_parameters,
     try to schedule as many observations as possible according to priority.
@@ -25,7 +27,7 @@ def schedule(timeslots: TimeSlots, observations: List[Observation]) -> Tuple[Sch
 
     Observations will
     :param timeslots: the timeslots as created by input_parameters.create_timeslots
-    :param observations: the list of observations
+    :param observations: the Observations object containing the list of observations
     :return: a tuple of Schedule as defined above, and the score for the schedule
     """
 
@@ -33,9 +35,8 @@ def schedule(timeslots: TimeSlots, observations: List[Observation]) -> Tuple[Sch
     # i * NUM_SLOTS_PER_RESOURCE to (i+1) * NUM_SLOTS_PER_RESOURCE - 1 represents the slots
     # for resource i.
 
-    # Enumerated timeslots and observations: we want to work with the index of these objects.
+    # Enumerated timeslots: we want to work with the index of these objects.
     enumerated_timeslots = list(enumerate(timeslots))
-    enumerated_observations = list(enumerate(observations))
 
     # Create the MIP solver.
     solver = Model('scheduler')
@@ -43,16 +44,16 @@ def schedule(timeslots: TimeSlots, observations: List[Observation]) -> Tuple[Sch
     # *** DECISION VARIABLES ***
     # Create the decision variables, Y_is: observation i can start in start slot s.
     y = []
-    for obs_idx, obs in enumerated_observations:
+    for obs_idx in range(observations.num_obs):
         yo = {ss_idx: solver.addVar(vtype=GRB.BINARY, name=('y_%d_%d' % (obs_idx, ss_idx)))
-              for ss_idx in obs.start_slots_idxs}
+              for ss_idx in observations.start_slot_idx[obs_idx]}
         y.append(yo)
         solver.update()
 
     # *** CONSTRAINT TYPE 1 ***
     # First, no observation should be scheduled for more than one start.
-    for obs_idx, obs in enumerated_observations:
-        expression = sum(y[obs_idx][k] for k in obs.start_slots_idxs) <= 1
+    for obs_idx in range(observations.num_obs):
+        expression = sum(y[obs_idx][k] for k in observations.start_slot_idx[obs_idx]) <= 1
         solver.addConstr(expression)
 
     # *** CONSTRAINT TYPE 2 ***
@@ -62,30 +63,30 @@ def schedule(timeslots: TimeSlots, observations: List[Observation]) -> Tuple[Sch
         # occupying all the needed time slots.
         # The for comprehension is messy here, and requires repeated calculations, so we use loops.
         expression = 0
-        for obs_idx, obs in enumerated_observations:
+        for obs_idx in range(observations.num_obs):
             # For each possible start slot for this observation:
-            for startslot_idx in obs.start_slots_idxs:
+            for startslot_idx in observations.start_slot_idx[obs_idx]:
                 # a_ikt * Y_ik -> a_ikt is 1 if starting obs obs_idx in startslot_idx means that it will occupy
                 # slot timeslot, else 0.
                 #
                 # Thus, to simplify over LCO, instead of using a_ikt, we include Y_ik
                 # in this constraint if starting at startslot means that the observation will occupy
                 # timeslot (a_ikt = 1), and we omit it otherwise (a_ikt = 0)
-                if startslot_idx <= timeslot_idx < startslot_idx + obs.needed_timeslots:
+                if startslot_idx <= timeslot_idx < startslot_idx + ceil(int(observations.obs_time[obs_idx] / TIMESLOT_LENGTH)):
                     expression += y[obs_idx][startslot_idx]
         solver.addConstr(expression <= 1)
-        print(expression)
+
+    observations.calculate_priority()
 
     # Create the objective function.
-    objective_function = sum([obs.priority * y[obs_idx][k]
-                              for obs_idx, obs in enumerated_observations
-                              for k in obs.start_slots_idxs])
+    objective_function = sum([observations.priority[obs_idx] * y[obs_idx][k]
+                              for obs_idx in range(observations.num_obs)
+                              for k in observations.start_slot_idx[obs_idx]])
     solver.setObjective(objective_function, GRB.MAXIMIZE)
 
     solver.update()
     solver.tune()
     solver.optimize()
-
 
     # Now get the score, which is the value of the objective function.
     # Right now, it is just a measure of the observations being scheduled (the score gets the priority of a
@@ -101,29 +102,16 @@ def schedule(timeslots: TimeSlots, observations: List[Observation]) -> Tuple[Sch
     for timeslot_idx in range(NUM_TIMESLOTS_PER_SITE * 2):
         # Try to find a variable whose observation was scheduled for this timeslot.
         # Otherwise, the value for the timeslot will be None.
-        for obs_idx, obs in enumerated_observations:
+        for obs_idx in range(observations.num_obs):
             # Check to see if this timeslot is in the start slots for this observation, and if so,
             # if it was selected via the decision variable as the start slot for this observation.
             if timeslot_idx in y[obs_idx] and y[obs_idx][timeslot_idx].X == 1.0:
                 print("timeslot=%s, y[%s][%s]=%s" % (timeslot_idx, obs_idx, timeslot_idx, y[obs_idx][timeslot_idx]))
                 # This is the start slot for the observation. Fill in the consecutive slots needed to complete it.
-                for i in range(obs.needed_timeslots):
+                for i in range(int(ceil(observations.obs_time[obs_idx] / TIMESLOT_LENGTH))):
                     final_schedule[timeslot_idx + i] = obs_idx
 
     return final_schedule, schedule_score
-
-
-def print_observations(observations: List[Observation]):
-    """
-    Prints the details of the observations.
-    :param observations: the list of observations
-    """
-    print('ObsIdx   Priority   Length (s)    StartSlotsIdx')
-    for obs_idx, obs in enumerate(observations):
-        print('%d         %d        %4d           %s'
-              % (obs_idx, obs.priority, obs.observation_length,
-                 ', '.join(['%s-%s' % (Resource(ss // NUM_TIMESLOTS_PER_SITE).name, ss % NUM_TIMESLOTS_PER_SITE)
-                            for ss in obs.start_slots_idxs])))
 
 
 def print_schedule(final_schedule: Schedule, final_score: Score):
@@ -146,21 +134,22 @@ def print_schedule(final_schedule: Schedule, final_score: Score):
     print('Score: %d\n' % final_score)
 
 
-def run():
+def run1():
     # Create the timeslots.
     # GN: 0 1 2 3  4  5
     # GS: 6 7 8 9 10 11
     timeslots = create_timeslots()
 
     # Create the list of observations. We will be working with the index of observation in this list.
-    observations = [
-        Observation(4, 300, [0, 1, 2, 5, 6, 9]),
-        Observation(1, 900, [0, 3, 8]),
-        Observation(4, 600, [1, 3, 4, 8, 10]),
-        Observation(3, 300, [0, 3, 6, 9, 11]),
-        Observation(2, 900, [1, 3, 7, 9]),
-        Observation(1, 600, [3, 5, 6, 8, 10])
-    ]
+    observations = Observations()
+    observations.add_obs('3', [0, 1, 2, 5, 6, 9], 300),
+    observations.add_obs('2', [0, 3, 8], 900),
+    observations.add_obs('3', [1, 3, 4, 8, 10], 600),
+    observations.add_obs('1', [0, 3, 6, 9, 11], 300),
+    observations.add_obs('2', [1, 3, 7, 9], 900),
+    observations.add_obs('1', [3, 5, 6, 8, 10], 600)
+
+    observations.calculate_priority()
     print_observations(observations)
 
     # Run the solver.
@@ -173,4 +162,4 @@ def run():
 
 if __name__ == '__main__':
     #print(timeit.timeit(stmt=run, number=10000))
-    run()
+    run1()

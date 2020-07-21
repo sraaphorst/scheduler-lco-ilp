@@ -204,7 +204,7 @@ def print_observations(obs: Observations):
             site, site_slot = divmod(slot_idx, NUM_TIMESLOTS_PER_SITE)
             ss.append("%s%s" % (Resource(site).name, site_slot))
         print(f"{idx:>5}  {obs.band[idx]:>4}  {int(obs.obs_time[idx]):>7}  "
-              f"{int(obs.allocated_time[idx]):>9}  {(obs.priority[idx]):>8}  "
+              f"{int(obs.allocated_time[idx]):>9}  {obs.priority[idx]:>8}  "
               f"{' '.join(ss)}")
 
 

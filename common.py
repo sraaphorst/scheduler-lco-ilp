@@ -1,11 +1,21 @@
-# input_parameters.py
+# common.py
 # By Sebastian Raaphorst, 2020.
-# This file defines the objects that manage time slots and observations.
+# This file defines the objects that manage time slots and observations, and
+# the primary output formatting.
 
 from enum import IntEnum
-from typing import List
+from typing import List, Union, Sized
 
 import numpy as np
+
+
+# The schedule consists of a map between timeslot indices and
+# observation indices - if any - to be run in those time slots.
+Schedule = List[Union[int, None]]
+
+
+# The final score for this schedule, based on observation prorities.
+Score = float
 
 
 class Resource(IntEnum):
@@ -219,6 +229,26 @@ class Observations:
         self.priority = metric
 
 
+def print_schedule(timeslots: TimeSlots, final_schedule: Schedule, final_score: Score):
+    """
+    Given the execution of a call to schedule, print the results.
+    :param timeslots: the TimeSlots object
+    :param final_schedule: the final schedule returned from schedule
+    :param final_score: the final score returned from schedule
+    """
+    print("FINAL SCHEDULE")
+    print(final_schedule)
+    print("DONE")
+    for site in Resource:
+        print('Schedule for %s:' % site.name)
+        print('\tTSIdx    ObsIdx')
+        for ts_offset in range(timeslots.num_timeslots_per_site):
+            ts_idx = ts_offset + site.value * timeslots.num_timeslots_per_site
+            if final_schedule[ts_idx] is not None:
+                print(f'\t    {ts_offset}         {final_schedule[ts_idx]}')
+    print(f'Score: {final_score:>5.3}')
+
+
 def print_observations(obs: Observations, timeslots: TimeSlots):
     """
     Output the list of observations.
@@ -226,9 +256,6 @@ def print_observations(obs: Observations, timeslots: TimeSlots):
     :param obs: the Observations object containing the observations
     :param slots: the TimeSlots object containing timeslot information
     """
-    # For padding, get the highest alloclen.
-    priolenmax = max([len("%.4f" % int(obs.priority[idx])) for idx in range(obs.num_obs)])
-
     print("Observations:")
     print("Index  Band  ObsTime  AllocTime  Priority  StartSlots")
     for idx in range(obs.num_obs):

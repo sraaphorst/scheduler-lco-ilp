@@ -3,20 +3,13 @@
 # This gives a different, but still valid solution from lco_solver.
 
 from __future__ import print_function
-from typing import List, Mapping, Tuple
+from typing import Tuple, Sized
 from math import ceil
 
 from gurobipy import *
 
-from input_parameters import *
+from common import *
 import timeit
-
-# The schedule consists of a map between timeslot indices and
-# observation indices - if any - to be run in those time slots.
-Schedule = Mapping[int, int]
-
-# The final score for this schedule, based on observation prorities.
-Score = int
 
 
 def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule, Score]:
@@ -99,7 +92,7 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
             print('y[%d][%d] = %s' % (idx1, idx2, y[idx1][idx2]))
     print()
 
-    final_schedule = {}
+    final_schedule = [None] * (timeslots.num_timeslots_per_site * len(Resource))
     for timeslot_idx in range(timeslots.num_timeslots_per_site * len(Resource)):
         # Try to find a variable whose observation was scheduled for this timeslot.
         # Otherwise, the value for the timeslot will be None.
@@ -111,56 +104,4 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
                 # This is the start slot for the observation. Fill in the consecutive slots needed to complete it.
                 for i in range(int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length))):
                     final_schedule[timeslot_idx + i] = obs_idx
-
     return final_schedule, schedule_score
-
-
-def print_schedule(timeslots: TimeSlots, final_schedule: Schedule, final_score: Score):
-    """
-    Given the execution of a call to schedule, print the results.
-    :param final_schedule: the final schedule returned from schedule
-    :param final_score: the final score returned from schedule
-    """
-    for site in Resource:
-        print('Schedule for %s:' % site.name)
-        print('\tTSIdx    ObsIdx')
-        for ts_offset in range(timeslots.num_timeslots_per_site):
-            ts_idx = ts_offset + site.value * timeslots.num_timeslots_per_site
-            if ts_offset in final_schedule:
-                print('\t    %d         %d' % (ts_offset, final_schedule[ts_idx]))
-            else:
-                print('\t    %d       None' % ts_offset)
-        print()
-
-    print('Score: %d\n' % final_score)
-
-
-def run1():
-    # Create the timeslots.
-    # GN: 0 1 2 3  4  5
-    # GS: 6 7 8 9 10 11
-    timeslots = TimeSlots()
-
-    # Create the list of observations. We will be working with the index of observation in this list.
-    observations = Observations()
-    observations.add_obs('3', [0, 1, 2, 5, 6, 9], 300),
-    observations.add_obs('2', [0, 3, 8], 900),
-    observations.add_obs('3', [1, 3, 4, 8, 10], 600),
-    observations.add_obs('1', [0, 3, 6, 9, 11], 300),
-    observations.add_obs('2', [1, 3, 7, 9], 900),
-    observations.add_obs('1', [3, 5, 6, 8, 10], 600)
-
-    observations.calculate_priority()
-    print_observations(observations, timeslots)
-
-    # Run the solver.
-    print(f'\nScheduling {timeslots.num_timeslots_per_site * timeslots.timeslot_length} s per site...')
-    final_schedule, final_score = schedule(timeslots, observations)
-    print('Scheduling done.\n')
-
-    print_schedule(timeslots, final_schedule, final_score)
-
-
-if __name__ == '__main__':
-    #print(timeit.timeit(stmt=run, number=10000))
-    run1()

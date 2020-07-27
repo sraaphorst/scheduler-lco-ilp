@@ -4,8 +4,9 @@
 # the primary output formatting.
 
 from enum import IntEnum
-from typing import List, Union, Sized
+from typing import List, Union, Tuple
 
+import timeit
 import numpy as np
 
 
@@ -229,16 +230,15 @@ class Observations:
         self.priority = metric
 
 
-def print_schedule(timeslots: TimeSlots, final_schedule: Schedule, final_score: Score):
+def print_schedule(timeslots: TimeSlots, observations: Observations,
+                   final_schedule: Schedule, final_score: Score):
     """
     Given the execution of a call to schedule, print the results.
     :param timeslots: the TimeSlots object
+    :param observations: the Observations object
     :param final_schedule: the final schedule returned from schedule
     :param final_score: the final score returned from schedule
     """
-    print("FINAL SCHEDULE")
-    print(final_schedule)
-    print("DONE")
     for site in Resource:
         print('Schedule for %s:' % site.name)
         print('\tTSIdx    ObsIdx')
@@ -246,7 +246,12 @@ def print_schedule(timeslots: TimeSlots, final_schedule: Schedule, final_score: 
             ts_idx = ts_offset + site.value * timeslots.num_timeslots_per_site
             if final_schedule[ts_idx] is not None:
                 print(f'\t    {ts_offset}         {final_schedule[ts_idx]}')
-    print(f'Score: {final_score:>5.3}')
+    print(f'Score: {final_score}')
+
+    # Unschedulable observations.
+    unschedulable = [str(o) for o in range(observations.num_obs) if o not in final_schedule]
+    if len(unschedulable) > 0:
+        print(f'\nUnschedulable observations: {", ".join(unschedulable)}')
 
 
 def print_observations(obs: Observations, timeslots: TimeSlots):

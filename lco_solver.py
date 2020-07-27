@@ -2,13 +2,11 @@
 # By Sebastian Raaphorst, 2020.
 
 from __future__ import print_function
-from typing import Tuple
 from math import ceil
 
 from ortools.linear_solver import pywraplp
 
 from common import *
-import timeit
 
 
 def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule, Score]:
@@ -83,10 +81,10 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
     # scheduled observation), but this will be much more complicated later on.
     schedule_score = solver.Objective().Value()
 
-    for idx1 in range(len(y)):
-        for idx2 in y[idx1]:
-            print('y[%d][%d] = %s' % (idx1, idx2, y[idx1][idx2].solution_value()))
-    print()
+    # for idx1 in range(len(y)):
+    #     for idx2 in y[idx1]:
+    #         print(f'y[{idx1}][{idx2}] = {y[idx1][idx2].solution_value()}')
+    # print()
 
     # Iterate over each timeslot index and see if an observation has been scheduled for it.
     final_schedule = [None] * (timeslots.num_timeslots_per_site * len(Resource))
@@ -97,7 +95,7 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
             # Check to see if this timeslot is in the start slots for this observation, and if so,
             # if it was selected via the decision variable as the start slot for this observation.
             if timeslot_idx in y[obs_idx] and y[obs_idx][timeslot_idx].solution_value() == 1:
-                print("timeslot=%s, y[%s][%s]=%s" % (timeslot_idx, obs_idx, timeslot_idx, y[obs_idx][timeslot_idx]))
+                # print(f'timeslot={timeslot_idx}, y[{obs_idx}][{timeslot_idx}]={y[obs_idx][timeslot_idx]}')
                 # This is the start slot for the observation. Fill in the consecutive slots needed to complete it.
                 for i in range(int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length))):
                     final_schedule[timeslot_idx + i] = obs_idx

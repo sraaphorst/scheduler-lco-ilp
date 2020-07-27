@@ -2,8 +2,8 @@
 # By Sebastian Raaphorst, 2020.
 
 # Alternate between LCO and Gurobi by switching the following imports:
-from lco_solver import *
-#from gurobi_solver import *
+#from lco_solver import *
+from gurobi_solver import *
 
 
 def example1(schedule):

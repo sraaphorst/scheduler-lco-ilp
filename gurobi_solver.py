@@ -29,8 +29,11 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
     # Enumerated timeslots: we want to work with the index of these objects.
     enumerated_timeslots = list(enumerate(timeslots))
 
+    # Turn off all output.
     # Create the MIP solver.
     solver = Model('scheduler')
+    solver.setParam('OutputFlag', 0)
+    solver.update()
 
     # *** DECISION VARIABLES ***
     # Create the decision variables, Y_is: observation i can start in start slot s.

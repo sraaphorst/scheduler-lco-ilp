@@ -70,7 +70,8 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
                 # Thus, to simplify over LCO, instead of using a_ikt, we include Y_ik
                 # in this constraint if starting at startslot means that the observation will occupy
                 # timeslot (a_ikt = 1), and we omit it otherwise (a_ikt = 0)
-                if startslot_idx <= timeslot_idx < startslot_idx + ceil(int(observations.obs_time[obs_idx] / TIMESLOT_LENGTH)):
+                if startslot_idx <= timeslot_idx < startslot_idx +\
+                        ceil(int(observations.obs_time[obs_idx] / timeslots.timeslot_length)):
                     expression += y[obs_idx][startslot_idx]
         solver.Add(expression <= 1)
 
@@ -96,7 +97,7 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
 
     # Iterate over each timeslot index and see if an observation has been scheduled for it.
     final_schedule = {}
-    for timeslot_idx in range(NUM_TIMESLOTS_PER_SITE * 2):
+    for timeslot_idx in range(timeslots.num_timeslots_per_site * len(Resource)):
         # Try to find a variable whose observation was scheduled for this timeslot.
         # Otherwise, the value for the timeslot will be None.
         for obs_idx in range(observations.num_obs):
@@ -105,23 +106,24 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
             if timeslot_idx in y[obs_idx] and y[obs_idx][timeslot_idx].solution_value() == 1:
                 print("timeslot=%s, y[%s][%s]=%s" % (timeslot_idx, obs_idx, timeslot_idx, y[obs_idx][timeslot_idx]))
                 # This is the start slot for the observation. Fill in the consecutive slots needed to complete it.
-                for i in range(int(ceil(observations.obs_time[obs_idx] / TIMESLOT_LENGTH))):
+                for i in range(int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length))):
                     final_schedule[timeslot_idx + i] = obs_idx
 
     return final_schedule, schedule_score
 
 
-def print_schedule(final_schedule: Schedule, final_score: Score):
+def print_schedule(timeslots: TimeSlots, final_schedule: Schedule, final_score: Score):
     """
     Given the execution of a call to schedule, print the results.
+    :param timeslots: the TimeSlots object
     :param final_schedule: the final schedule returned from schedule
     :param final_score: the final score returned from schedule
     """
     for site in Resource:
         print('Schedule for %s:' % site.name)
         print('\tTSIdx    ObsIdx')
-        for ts_offset in range(NUM_TIMESLOTS_PER_SITE):
-            ts_idx = ts_offset + site.value * NUM_TIMESLOTS_PER_SITE
+        for ts_offset in range(timeslots.num_timeslots_per_site):
+            ts_idx = ts_offset + site.value * timeslots.num_timeslots_per_site
             if ts_offset in final_schedule:
                 print('\t    %d         %d' % (ts_offset, final_schedule[ts_idx]))
             else:
@@ -135,7 +137,7 @@ def run1():
     # Create the timeslots.
     # GN: 0 1 2 3  4  5
     # GS: 6 7 8 9 10 11
-    timeslots = create_timeslots()
+    timeslots = TimeSlots()
 
     # Create the list of observations. We will be working with the index of observation in this list.
     observations = Observations()
@@ -147,14 +149,14 @@ def run1():
     observations.add_obs('1', [3, 5, 6, 8, 10], 600)
 
     observations.calculate_priority()
-    print_observations(observations)
+    print_observations(observations, timeslots)
 
     # Run the solver.
-    print('\nScheduling %d s per site...' % (NUM_TIMESLOTS_PER_SITE * TIMESLOT_LENGTH))
+    print(f'\nScheduling {timeslots.num_timeslots_per_site * timeslots.timeslot_length} s per site...')
     final_schedule, final_score = schedule(timeslots, observations)
     print('Scheduling done.\n')
 
-    print_schedule(final_schedule, final_score)
+    print_schedule(timeslots, final_schedule, final_score)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 # input_parameters.py
 # By Sebastian Raaphorst, 2020.
+# This file defines the objects that manage time slots and observations.
 
 from enum import IntEnum
 from typing import List
@@ -8,6 +9,9 @@ import numpy as np
 
 
 class Resource(IntEnum):
+    """
+    The resources (telescopes) to be scheduled.
+    """
     GN = 0
     GS = 1
 
@@ -15,14 +19,11 @@ class Resource(IntEnum):
 # An alias for priority. Right now we use a simple int as a priority.
 Priority = int
 
-# The duration of a timeslot. We use 5 * 60 s = 300 s, or 5 minutes.
-TIMESLOT_LENGTH = 5 * 60
-
-# The number of timeslots per site. We schedule currently 30 mins per site.
-NUM_TIMESLOTS_PER_SITE = 6
-
 
 class TimeSlot:
+    """
+    A single representation of a time slot, which is a resource and a period of time.
+    """
     def __init__(self, resource: Resource, start_time: int):
         """
         The definition of a time slot available for a resource.
@@ -37,36 +38,67 @@ class TimeSlot:
         self.start_time = start_time
 
 
-# We store the timeslots as a list so we can access it by index and avoid iteration issues.
-TimeSlots = List[TimeSlot]
-
-
-def create_timeslots() -> TimeSlots:
+class TimeSlots:
     """
-    Create the timeslots for scheduling.
-    For each resource, we begin at time 0 and create a timeslot.
-    We then increment by TIMESLOT_LENGTH and create another timeslot.
-    We continue to create timeslots until we have the specified number for each resource.
-
-    :return: a list of timeslots
+    A collection of TimeSlot objects.
     """
-    slots = []
-    for r in Resource:
-        for idx in range(NUM_TIMESLOTS_PER_SITE):
-            slots.append(TimeSlot(r, idx * TIMESLOT_LENGTH))
-    return slots
+    def __init__(self, timeslot_length: int = 5 * 60, num_timeslots_per_site: int = 6):
+        """
+        Create the collection of timeslots, which consist of a collection of TimeSlot
+        objects as below for scheduling.
+
+        For each resource, we begin at time 0 and create a timeslot.
+        We then increment by TIMESLOT_LENGTH and create another timeslot.
+        We continue to create timeslots until we have the specified number for each resource.
+
+        :param timeslot_length: the length of the timeslots in s, default is 5 min
+        :param num_timeslots_per_site: the number of timeslots per site
+        """
+        self.timeslot_length = timeslot_length
+        self.num_timeslots_per_site = num_timeslots_per_site
+
+        self.timeslots = []
+        for r in Resource:
+            for idx in range(num_timeslots_per_site):
+                self.timeslots.append(TimeSlot(r, idx * timeslot_length))
+
+    def get_time_slot(self, resource: Resource, index: int) -> TimeSlot:
+        """
+        Given a resource and an index into its timeslots, return the corresponding timeslot.
+        :param resource: the Resource
+        :param index: the index, in [0, NUM_TIMESLOTS_PER_SITE]
+        :return: the TimeSlot, if it exists
+        :except: ValueError if the index condition is violated
+        """
+        return self.timeslots[resource * self.num_timeslots_per_site + index]
+
+    def __iter__(self):
+        """
+        Create an iterator for the time slots.
+        :return: an iterator
+        """
+        return TimeSlotsIterator(self)
 
 
-def get_time_slot(resource: Resource, index: int, timeslots: TimeSlots) -> TimeSlot:
+class TimeSlotsIterator:
     """
-    Given a resource and an index into its timeslots, return the corresponding timeslot.
-    :param resource: the Resource
-    :param index: the index, in [0, NUM_TIMESLOTS_PER_SITE]
-    :param timeslots: the list of TimeSlots
-    :return: the TimeSlot, if it exists
-    :except: ValueError if the index condition is violated
+    Iterator class for TimeSlots.
     """
-    return timeslots[resource * NUM_TIMESLOTS_PER_SITE + index]
+    def __init__(self, timeslots: TimeSlots):
+        self._timeslots = timeslots
+        self._index = 0
+
+    def __next__(self) -> TimeSlot:
+        """
+        Returns the next time slot.
+        :return: the next time slot
+        :except: StopIteration when the iteration is done
+        """
+        if self._index < len(self._timeslots.timeslots):
+            slot = self._timeslots.timeslots[self._index]
+            self._index += 1
+            return slot
+        raise StopIteration
 
 
 class Observations:
@@ -187,11 +219,12 @@ class Observations:
         self.priority = metric
 
 
-def print_observations(obs: Observations):
+def print_observations(obs: Observations, timeslots: TimeSlots):
     """
     Output the list of observations.
     Prior to doing this, calculate_priority should be called.
     :param obs: the Observations object containing the observations
+    :param slots: the TimeSlots object containing timeslot information
     """
     # For padding, get the highest alloclen.
     priolenmax = max([len("%.4f" % int(obs.priority[idx])) for idx in range(obs.num_obs)])
@@ -201,7 +234,7 @@ def print_observations(obs: Observations):
     for idx in range(obs.num_obs):
         ss = []
         for slot_idx in obs.start_slot_idx[idx]:
-            site, site_slot = divmod(slot_idx, NUM_TIMESLOTS_PER_SITE)
+            site, site_slot = divmod(slot_idx, timeslots.num_timeslots_per_site)
             ss.append("%s%s" % (Resource(site).name, site_slot))
         print(f"{idx:>5}  {obs.band[idx]:>4}  {int(obs.obs_time[idx]):>7}  "
               f"{int(obs.allocated_time[idx]):>9}  {obs.priority[idx]:>8}  "
@@ -209,14 +242,15 @@ def print_observations(obs: Observations):
 
 
 if __name__ == '__main__':
-    print("Creating %d timeslots of length %d s each for each site...\n" % (NUM_TIMESLOTS_PER_SITE, TIMESLOT_LENGTH))
-    slots = create_timeslots()
+    slots = TimeSlots()
+    print(f"Created {slots.timeslot_length} timeslots of length "
+          f"f{slots.num_timeslots_per_site} s each for each site...\n")
     for r in Resource:
-        print("%s slots" % r)
+        print(f"{r} slots")
         print("-----------------")
-        for s in range(NUM_TIMESLOTS_PER_SITE):
-            timeslot = get_time_slot(r, s, slots)
-            print("%d s -> %d s" % (timeslot.start_time, timeslot.start_time + TIMESLOT_LENGTH - 1))
+        for s in range(slots.num_timeslots_per_site):
+            timeslot = slots.get_time_slot(r, s)
+            print(f"{timeslot.start_time} s -> {timeslot.start_time + slots.timeslot_length - 1} s")
         print()
 
 

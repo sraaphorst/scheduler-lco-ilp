@@ -285,11 +285,16 @@ def print_observations(obs: Observations, timeslots: TimeSlots):
     print("Observations:")
     print("Index  Band  ObsTime  AllocTime  Priority  StartSlots")
     for idx in range(obs.num_obs):
+        prev_site = 0
         ss = []
         for slot in obs.start_slots[idx]:
             slot_idx = slot.timeslot_idx
+            slot_metric = slot.metric_score
             site, site_slot = divmod(slot_idx, timeslots.num_timeslots_per_site)
-            ss.append("%s%s" % (Resource(site).name, site_slot))
+            if site != prev_site:
+                ss.append('  |||  ')
+                prev_site = site
+            ss.append(f"{Resource(site).name}{site_slot}({slot_metric})")
         print(f"{idx:>5}  {obs.band[idx]:>4}  {int(obs.obs_time[idx]):>7}  "
               f"{int(obs.allocated_time[idx]):>9}  {obs.priority[idx]:>8}  "
               f"{' '.join(ss)}")

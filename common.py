@@ -5,6 +5,7 @@
 
 from enum import IntEnum
 from typing import List, Union, Tuple
+from dataclasses import dataclass
 
 import timeit
 import numpy as np
@@ -112,6 +113,26 @@ class TimeSlotsIterator:
         raise StopIteration
 
 
+@dataclass
+class TS:
+    """
+    This is just a function to wrap a timeslot index and a metric score for
+    that timeslot index together. It is a temporary measure to provide a metric
+    for timeslots for each observation, which would otherwise be based on an
+    actual metric function.
+
+    This is factored into the objective function for each observation, so the
+    objective function has an overall metric on observations, and then a metric
+    (currently faux) function on timeslots per observation.
+
+    :param timeslot_idx: the index of the timeslot
+    :param metric_score: the metric score of the timeslot for the observation
+    :return: a tuple representing
+    """
+    timeslot_idx: int
+    metric_score: float = 1.0
+
+
 class Observations:
     """
     The set of observations and the necessary information to formulate the mathematical ILP model
@@ -143,7 +164,7 @@ class Observations:
         self.used_time = np.empty((0,), dtype=float)
         self.allocated_time = np.empty((0,), dtype=float)
         self.obs_time = np.empty((0,), dtype=float)
-        self.start_slot_idx = []
+        self.start_slots = []
         self.priority = np.empty((0,), dtype=float)
 
         self.params = {'1': {'m1': 1.406, 'b1': 2.0, 'm2': 0.50, 'b2': 0.5, 'xb': 0.8, 'xb0': 0.0, 'xc0': 0.0},
@@ -167,11 +188,11 @@ class Observations:
             self.params[band]['xb'] = xb
             b1 += m2[band] * 1.0 + b2
 
-    def add_obs(self, band: str, start_slot_idx: List[int], obs_time: float,
+    def add_obs(self, band: str, start_slot_idx: List[TS], obs_time: float,
                 allocated_time=None):
         assert (allocated_time != 0)
         self.band = np.append(self.band, band)
-        self.start_slot_idx.append(start_slot_idx)
+        self.start_slots.append(start_slot_idx)
         self.used_time = np.append(self.used_time, 0)
         self.allocated_time = np.append(self.allocated_time, obs_time if allocated_time is None else allocated_time)
         self.obs_time = np.append(self.obs_time, obs_time)
@@ -265,7 +286,8 @@ def print_observations(obs: Observations, timeslots: TimeSlots):
     print("Index  Band  ObsTime  AllocTime  Priority  StartSlots")
     for idx in range(obs.num_obs):
         ss = []
-        for slot_idx in obs.start_slot_idx[idx]:
+        for slot in obs.start_slots[idx]:
+            slot_idx = slot.timeslot_idx
             site, site_slot = divmod(slot_idx, timeslots.num_timeslots_per_site)
             ss.append("%s%s" % (Resource(site).name, site_slot))
         print(f"{idx:>5}  {obs.band[idx]:>4}  {int(obs.obs_time[idx]):>7}  "

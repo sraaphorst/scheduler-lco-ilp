@@ -35,14 +35,14 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
     # Create the decision variables, Y_is: observation i can start in start slot s.
     y = []
     for obs_idx in range(observations.num_obs):
-        yo = {ss_idx: solver.BoolVar('y_%d_%d' % (obs_idx, ss_idx))
-              for ss_idx in observations.start_slot_idx[obs_idx]}
+        yo = {ss.timeslot_idx: solver.BoolVar('y_%d_%d' % (obs_idx, ss.timeslot_idx))
+              for ss in observations.start_slots[obs_idx]}
         y.append(yo)
 
     # *** CONSTRAINT TYPE 1 ***
     # First, no observation should be scheduled for more than one start.
     for obs_idx in range(observations.num_obs):
-        expression = sum(y[obs_idx][k] for k in observations.start_slot_idx[obs_idx]) <= 1
+        expression = sum(y[obs_idx][ss.timeslot_idx] for ss in observations.start_slots[obs_idx]) <= 1
         solver.Add(expression)
 
     # *** CONSTRAINT TYPE 2 ***
@@ -54,7 +54,8 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
         expression = 0
         for obs_idx in range(observations.num_obs):
             # For each possible start slot for this observation:
-            for startslot_idx in observations.start_slot_idx[obs_idx]:
+            for startslot in observations.start_slots[obs_idx]:
+                startslot_idx = startslot.timeslot_idx
                 # a_ikt * Y_ik -> a_ikt is 1 if starting obs obs_idx in startslot_idx means that it will occupy
                 # slot timeslot, else 0.
                 #
@@ -67,10 +68,13 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
         solver.Add(expression <= 1)
 
     observations.calculate_priority()
-    # Create the objective function.
-    objective_function = sum([observations.priority[obs_idx] * y[obs_idx][k]
+
+    # Create the objective function. Multiply each variable for the priority for the:
+    # 1. observation metric
+    # 2. metric score for the timeslot observation.
+    objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx]
                               for obs_idx in range(observations.num_obs)
-                              for k in observations.start_slot_idx[obs_idx]])
+                              for ss in observations.start_slots[obs_idx]])
     solver.Maximize(objective_function)
 
     # Run the solver.

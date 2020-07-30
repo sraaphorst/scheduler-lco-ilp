@@ -301,15 +301,15 @@ def print_observations(obs: Observations, timeslots: TimeSlots):
 
 
 if __name__ == '__main__':
-    slots = TimeSlots()
-    print(f"Created {slots.timeslot_length} timeslots of length "
-          f"f{slots.num_timeslots_per_site} s each for each site...\n")
+    timeslots = TimeSlots()
+    print(f"Created {timeslots.num_timeslots_per_site} timeslots of length "
+          f"{timeslots.timeslot_length} s each for each site...\n")
     for r in Resource:
-        print(f"{r} slots")
+        print(f"{r} timeslots")
         print("-----------------")
-        for s in range(slots.num_timeslots_per_site):
-            timeslot = slots.get_time_slot(r, s)
-            print(f"{timeslot.start_time} s -> {timeslot.start_time + slots.timeslot_length - 1} s")
+        for s in range(timeslots.num_timeslots_per_site):
+            timeslot = timeslots.get_time_slot(r, s)
+            print(f"{timeslot.start_time} s -> {timeslot.start_time + timeslots.timeslot_length - 1} s")
         print()
 
 

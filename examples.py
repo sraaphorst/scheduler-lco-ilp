@@ -2,8 +2,8 @@
 # By Sebastian Raaphorst, 2020.
 
 # Alternate between LCO and Gurobi by switching the following imports:
-from lco_solver import *
-# from gurobi_solver import *
+# from lco_solver import *
+from gurobi_solver import *
 
 
 def example_fully_scheduled(schedule):
@@ -36,7 +36,7 @@ def example_fully_scheduled(schedule):
     observations.add_obs('2', [TS(1), TS(3), TS(7), TS(9)], 900)
 
     # Observation 5
-    observations.add_obs('1', [TS(3), TS(5), TS(6), TS(8), TS(10)], 600)
+    observations.add_obs('1', [TS(3), TS(8), TS(10)], 600)
 
     observations.calculate_priority()
     print_observations(observations, timeslots)
@@ -64,19 +64,19 @@ def example_underscheduled(schedule):
     # Create the list of observations. We will be working with the index of observation in this list.
     observations = Observations()
 
-    # Observation 1
+    # Observation 0
     observations.add_obs('2', [TS(0), TS(7), TS(9)], 800)
 
-    # Observation 2
+    # Observation 1
     observations.add_obs('1', [TS(0), TS(2), TS(4)], 600)
 
-    # Observation 3
+    # Observation 2
     observations.add_obs('1', [TS(3)], 900)
 
-    # Observation 4
+    # Observation 3
     observations.add_obs('3', [TS(2), TS(5), TS(6), TS(10)], 300)
 
-    # Observation 5
+    # Observation 4
     observations.add_obs('3', [TS(1), TS(3), TS(5), TS(6), TS(10)], 300)
 
     observations.calculate_priority()
@@ -153,7 +153,7 @@ def example_do_not_fit(schedule):
     observations.add_obs('1', [TS(0), TS(7), TS(10)], 600)
 
     # Observation 1
-    observations.add_obs('2', [TS(3), TS(9)], 900)
+    observations.add_obs('2', [TS(3), TS(8)], 900)
 
     # Observation 2
     observations.add_obs('3', [TS(0), TS(1), TS(2), TS(3), TS(4),
@@ -180,8 +180,7 @@ def example_do_not_fit(schedule):
 
 
 if __name__ == '__main__':
-    # print(timeit.timeit(stmt=run, number=10000))
-    # example_fully_scheduled(schedule)
+    example_fully_scheduled(schedule)
     # example_underscheduled(schedule)
     # example_overscheduled(schedule)
-    example_do_not_fit(schedule)
+    # example_do_not_fit(schedule)

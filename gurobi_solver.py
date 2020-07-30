@@ -32,7 +32,9 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
     # Turn off all output.
     # Create the MIP solver.
     solver = Model('scheduler')
-    solver.setParam('OutputFlag', 0)
+    solver.Params.OutputFlag = 0
+    solver.Params.MIPGap = 0.01
+    solver.Params.Method = 3
     solver.update()
 
     # *** DECISION VARIABLES ***

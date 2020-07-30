@@ -4,7 +4,7 @@
 # Alternate between LCO and Gurobi by switching the following imports.
 # Note that Gurobi coincidentally solves these the same, but could return any permutation as lco_scheduler does.
 from lco_solver import *
-#  from gurobipy import *
+# from gurobi_solver import *
 
 
 def example_metric(schedule):
@@ -32,6 +32,17 @@ def example_metric(schedule):
     # Metric curve for observation 1 is based on:
     # y = max(0.1, -(1/10)(x - 2)^2 + 1)
     # and shifted around for different observations.
+
+    # The variables are still Y_o,t for o an observation, t a timeslot with
+    # value 1 if o is scheduled at t, and 0 otherwise.
+
+    # The objective function was originally:
+    # sum_{o in O} m(o) (sum_{t in T} Y_o,t)
+
+    # The objective function becomes:
+    # sum_{o in O} m(o) (sum_{t in T} m_o(t) Y_o,t)
+    #                                 ^^^^^^
+    # where m_o(t) is the metric function for observation o on the timeslots.
 
     # Observation 0
     observations.add_obs('3', [TS(0, 1), TS(1, 0.9), TS(2, 0.6), TS(3, 0.1), TS(4, 0.1),

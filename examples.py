@@ -180,7 +180,7 @@ def example_do_not_fit(schedule):
 
 
 if __name__ == '__main__':
-    example_fully_scheduled(schedule)
+    # example_fully_scheduled(schedule)
     # example_underscheduled(schedule)
     # example_overscheduled(schedule)
-    # example_do_not_fit(schedule)
+    example_do_not_fit(schedule)

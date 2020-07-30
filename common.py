@@ -73,7 +73,7 @@ class TimeSlots:
             for idx in range(num_timeslots_per_site):
                 self.timeslots.append(TimeSlot(r, idx * timeslot_length))
 
-    def get_time_slot(self, resource: Resource, index: int) -> TimeSlot:
+    def get_timeslot(self, resource: Resource, index: int) -> TimeSlot:
         """
         Given a resource and an index into its timeslots, return the corresponding timeslot.
         :param resource: the Resource
@@ -318,7 +318,7 @@ if __name__ == '__main__':
         print(f"{r} timeslots")
         print("-----------------")
         for s in range(timeslots.num_timeslots_per_site):
-            timeslot = timeslots.get_time_slot(r, s)
+            timeslot = timeslots.get_timeslot(r, s)
             print(f"{timeslot.start_time} s -> {timeslot.start_time + timeslots.timeslot_length - 1} s")
         print()
 

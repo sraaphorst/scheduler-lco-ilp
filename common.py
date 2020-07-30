@@ -4,10 +4,9 @@
 # the primary output formatting.
 
 from enum import IntEnum
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Callable
 from dataclasses import dataclass
 
-import timeit
 import numpy as np
 
 
@@ -116,7 +115,7 @@ class TimeSlotsIterator:
 @dataclass
 class TS:
     """
-    This is just a function to wrap a timeslot index and a metric score for
+    This is just a dataclass to wrap a timeslot index and a metric score for
     that timeslot index together. It is a temporary measure to provide a metric
     for timeslots for each observation, which would otherwise be based on an
     actual metric function.
@@ -189,7 +188,14 @@ class Observations:
             b1 += m2[band] * 1.0 + b2
 
     def add_obs(self, band: str, start_slot_idx: List[TS], obs_time: float,
-                allocated_time=None):
+                allocated_time=None) -> None:
+        """
+        Add an observation to the collection of observations.
+        :param band: the band of the observation: a string of 1, 2, or 3
+        :param start_slot_idx: a list of TS data objects, which are TimeSlots and metric scores.
+        :param obs_time: the observation time
+        :param allocated_time: the allocated time
+        """
         assert (allocated_time != 0)
         self.band = np.append(self.band, band)
         self.start_slots.append(start_slot_idx)
@@ -201,7 +207,7 @@ class Observations:
     def is_done(self, id: int) -> bool:
         return self.used_time[id] >= self.obs_time[id]
 
-    def calculate_completion(self):
+    def _calculate_completion(self) -> None:
         """
         Calculate the completion of the observations.
         This is a simplification that expects the observation to take up (at least) the entire allocated time.
@@ -212,7 +218,7 @@ class Observations:
     def __len__(self):
         return self.num_obs
 
-    def calculate_priority(self):
+    def calculate_priority(self) -> None:
         """
         Compute the priority as a function of completeness fraction and band for the objective function.
 
@@ -223,7 +229,7 @@ class Observations:
         By Bryan Miller, 2020.
         """
         # Calculate the completion for all observations.
-        self.calculate_completion()
+        self._calculate_completion()
 
         nn = len(self.completed)
         metric = np.zeros(nn)
@@ -252,7 +258,7 @@ class Observations:
 
 
 def print_schedule(timeslots: TimeSlots, observations: Observations,
-                   final_schedule: Schedule, final_score: Score):
+                   final_schedule: Schedule, final_score: Score) -> None:
     """
     Given the execution of a call to schedule, print the results.
     :param timeslots: the TimeSlots object
@@ -275,7 +281,7 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
         print(f'\nUnschedulable observations: {", ".join(unschedulable)}')
 
 
-def print_observations(obs: Observations, timeslots: TimeSlots):
+def print_observations(obs: Observations, timeslots: TimeSlots) -> None:
     """
     Output the list of observations.
     Prior to doing this, calculate_priority should be called.
@@ -298,6 +304,10 @@ def print_observations(obs: Observations, timeslots: TimeSlots):
         print(f"{idx:>5}  {obs.band[idx]:>4}  {int(obs.obs_time[idx]):>7}  "
               f"{int(obs.allocated_time[idx]):>9}  {obs.priority[idx]:>8}  "
               f"{' '.join(ss)}")
+
+
+# The Scheduler type
+Scheduler = Callable[[TimeSlots, Observations], Tuple[Schedule, Score]]
 
 
 if __name__ == '__main__':

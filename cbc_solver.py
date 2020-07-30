@@ -1,4 +1,4 @@
-# lco_solver.py
+# cbc_solver.py
 # By Sebastian Raaphorst, 2020.
 
 from __future__ import print_function

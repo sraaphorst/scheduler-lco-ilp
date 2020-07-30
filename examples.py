@@ -1,12 +1,12 @@
 # examples.py
 # By Sebastian Raaphorst, 2020.
 
-# Alternate between LCO and Gurobi by switching the following imports:
-# from lco_solver import *
-from gurobi_solver import *
+# Alternate between CBC and Gurobi by switching the following imports:
+from cbc_solver import *
+# from gurobi_solver import *
 
 
-def example_fully_scheduled(schedule):
+def example_fully_scheduled(schedule: Scheduler) -> None:
     """
     A small example which will schedule fully all observations.
     """
@@ -49,7 +49,7 @@ def example_fully_scheduled(schedule):
     print_schedule(timeslots, observations, final_schedule, final_score)
 
 
-def example_underscheduled(schedule):
+def example_underscheduled(schedule: Scheduler) -> None:
     """
     A small example which will schedule fully all observations and have room left over.
     One of the observations has slack time of 100 s, i.e. observation 1.
@@ -90,7 +90,7 @@ def example_underscheduled(schedule):
     print_schedule(timeslots, observations, final_schedule, final_score)
 
 
-def example_overscheduled(schedule):
+def example_overscheduled(schedule: Scheduler) -> None:
     """
     A small example which will cannot fully schedule all observations as there is insufficient time.
     """
@@ -135,7 +135,7 @@ def example_overscheduled(schedule):
     print_schedule(timeslots, observations, final_schedule, final_score)
 
 
-def example_do_not_fit(schedule):
+def example_do_not_fit(schedule: Scheduler[None]):
     """
     A small example in which there is enough time but the observations do not fit.
     """

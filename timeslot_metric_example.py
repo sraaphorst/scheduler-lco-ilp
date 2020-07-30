@@ -1,13 +1,13 @@
 # timeslot_metric_example.py
 # By Sebastian Raaphorst, 2020.
 
-# Alternate between LCO and Gurobi by switching the following imports.
-# Note that Gurobi coincidentally solves these the same, but could return any permutation as lco_scheduler does.
-from lco_solver import *
+# Alternate between CBC and Gurobi by switching the following imports.
+# Note that gurobi_solver coincidentally solves these the same, but could return any permutation as cbc_solver does.
+from cbc_solver import *
 # from gurobi_solver import *
 
 
-def example_metric(schedule):
+def example_metric(schedule: Scheduler) -> None:
     """
     Small example to show the timeslot priority per observation.
     """
@@ -75,7 +75,7 @@ def example_metric(schedule):
     print_schedule(timeslots, observations, final_schedule, final_score)
 
 
-def example_nometric(schedule):
+def example_nometric(schedule: Scheduler) -> None:
     """
     Same as example_metric but without timeslot metric so any permutation can occur.
     """

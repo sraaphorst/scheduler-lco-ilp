@@ -1,9 +1,9 @@
 # timing_info.py
 # By Sebastian Raaphorst, 2020.
 
-# Alternate between LCO and Gurobi by switching the following imports:
-# from lco_solver import *
-from gurobi_solver import *
+# Alternate between CBC and Gurobi by switching the following imports:
+from cbc_solver import *
+# from gurobi_solver import *
 
 from random import seed, random, randrange, sample, uniform
 import time
@@ -12,7 +12,7 @@ import time
 def generate_random_observation(observations: Observations,
                                 timeslots: TimeSlots,
                                 timeslot_alllowance_min: float = 0.01,
-                                timeslot_allowance_max: float = 0.03):
+                                timeslot_allowance_max: float = 0.03) -> None:
     """
     Add a random observation to the collection of observations.
     :param observations: the collection of Observation objects

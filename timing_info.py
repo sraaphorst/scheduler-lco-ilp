@@ -23,10 +23,10 @@ def generate_random_observation(observations: Observations,
     # Generate the band uniformly, from 1, 2, 3.
     band = str(randrange(1, 4))
 
-    # Generate the length of the observation uniformly, from 30 minutes to three hours.
+    # Generate the length of the observation uniformly, from 30 minutes to two hours.
     # Represented in seconds, 6 is 30 minutes, 36 is three hours.
     # 300 seconds = 5 minutes.
-    length = 300 * randrange(6, 36)
+    length = 300 * randrange(6, 24)
 
     # Now decide which timeslots we can insert into, and their metric.
     total_num_timeslots = timeslots.num_timeslots_per_site * 2
@@ -43,21 +43,22 @@ if __name__ == '__main__':
 
     # We want a month (30 days) of timeslots per site. Each timeslot is 5 minutes.
     # Assume 10 hours of darkness per day.
-    num_days = 10
-    num_timeslots_per_site = 5 * 12 * 10 * num_days
+    # num_days = 1
+    # num_timeslots_per_site = 5 * 12 * 10 * num_days
+    num_timeslots_per_site = 200
     timeslots = TimeSlots(num_timeslots_per_site=num_timeslots_per_site)
 
     print(f"Created {timeslots.num_timeslots_per_site} timeslots of length "
           f"{timeslots.timeslot_length} s each for each site...\n")
 
     # Create observations.
-    num_observations = 100
+    num_observations = 40
     observations = Observations()
     for _ in range(num_observations):
         generate_random_observation(observations, timeslots)
     observations.calculate_priority()
     print(f"Created {num_observations} observations.")
-
+    print_observations(observations, timeslots)
     # Run the solver.
     start_time = time.monotonic()
     final_schedule, final_score = schedule(timeslots, observations)

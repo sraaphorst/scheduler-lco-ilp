@@ -91,8 +91,8 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
     # print()
 
     # Iterate over each timeslot index and see if an observation has been scheduled for it.
-    final_schedule = [None] * (timeslots.num_timeslots_per_site * len(Resource))
-    for timeslot_idx in range(timeslots.num_timeslots_per_site * len(Resource)):
+    final_schedule = [None] * (timeslots.num_timeslots_per_site * 2)
+    for timeslot_idx in range(timeslots.num_timeslots_per_site * 2):
         # Try to find a variable whose observation was scheduled for this timeslot.
         # Otherwise, the value for the timeslot will be None.
         for obs_idx in range(observations.num_obs):
@@ -101,6 +101,7 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
             if timeslot_idx in y[obs_idx] and y[obs_idx][timeslot_idx].solution_value() == 1:
                 # print(f'timeslot={timeslot_idx}, y[{obs_idx}][{timeslot_idx}]={y[obs_idx][timeslot_idx]}')
                 # This is the start slot for the observation. Fill in the consecutive slots needed to complete it.
+                # Consecutive slots needed:
                 for i in range(int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length))):
                     final_schedule[timeslot_idx + i] = obs_idx
     return final_schedule, schedule_score

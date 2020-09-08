@@ -25,6 +25,7 @@ class Resource(IntEnum):
     """
     GN = 0
     GS = 1
+    Both = 2
 
 
 # An alias for priority. Right now we use a simple int as a priority.
@@ -158,6 +159,7 @@ class Observations:
         priority - the priority for time slice t
         """
         self.num_obs = 0
+        self.resource = np.empty((0,), dtype=Resource)
         self.band = np.empty((0,), dtype=str)
         self.completed = np.empty((0,), dtype=float)
         self.used_time = np.empty((0,), dtype=float)
@@ -187,7 +189,7 @@ class Observations:
             self.params[band]['xb'] = xb
             b1 += m2[band] * 1.0 + b2
 
-    def add_obs(self, band: str, start_slot_idx: List[TS], obs_time: float,
+    def add_obs(self, band: str, resource: Resource, start_slot_idx: List[TS], obs_time: float,
                 allocated_time=None) -> None:
         """
         Add an observation to the collection of observations.
@@ -198,6 +200,7 @@ class Observations:
         """
         assert (allocated_time != 0)
         self.band = np.append(self.band, band)
+        self.resource = np.append(self.resource, resource)
         self.start_slots.append(start_slot_idx)
         self.used_time = np.append(self.used_time, 0)
         self.allocated_time = np.append(self.allocated_time, obs_time if allocated_time is None else allocated_time)
@@ -256,6 +259,51 @@ class Observations:
                 metric[ii] = self.params[sband]['m2'] * 1.0 + b2 + self.params[sband]['xc0']
         self.priority = metric
 
+GA_Schedule = List[Tuple[int, int]]
+
+
+def schedule_transform(final_schedule: Schedule, observations: Observations, resource: Resource, timeslots: TimeSlots) -> GA_Schedule:
+    """
+    Convert to the same format used by the genetic algorithm, for output purposes.
+    :param final_schedule: the schedule returned by the ILP solver
+    :param timeslots: the timeslots
+    :return: the GA scheduler equivalent
+    """
+    # Convert to same format as genetic algorithm: (start time, obs_idx).
+    curr_time = 0
+    sched = []
+    for ts_idx, obs_idx in \
+            enumerate(final_schedule[:timeslots.num_timeslots_per_site] if resource == Resource.GN
+                      else final_schedule[timeslots.num_timeslots_per_site:]):
+        if obs_idx is None or observations.resource[obs_idx] not in [resource, Resource.Both]:
+            continue
+        if len(sched) == 0 or sched[-1][1] != obs_idx:
+            sched.append((ts_idx, obs_idx))
+    return sched
+
+
+def detailed_schedule(name: str, schedule: GA_Schedule, observations: Observations, stop_time: int) -> str:
+    line_start = '\n\t' if name is not None else '\n'
+    data = name if name is not None else ''
+
+    obs_prev_time = 0
+    for obs_start_time, obs_idx in schedule:
+        if obs_prev_time != obs_start_time:
+            gap_size = int(obs_start_time - obs_prev_time)
+            data += line_start + f'Gap of  {gap_size:>3} min{"s" if gap_size > 1 else ""}'
+        data += line_start + f'At time {obs_start_time:>3}: Observation {obs_idx:>4}, ' \
+                             f'band={int(observations.band[obs_idx])}, ' \
+                             f'resource={Resource(observations.resource[obs_idx]).name:<4}, ' \
+                             f'obs_time={int(observations.obs_time[obs_idx]):>3}, ' \
+                             f'priority={observations.priority[obs_idx]:>4}'
+        obs_prev_time = obs_start_time + observations.obs_time[obs_idx]
+
+    if obs_prev_time != stop_time:
+        gap_size = int(stop_time - obs_prev_time)
+        data += line_start + f'Gap of  {gap_size:>3} min{"s" if gap_size > 1 else ""}'
+
+    return data
+
 
 def print_schedule(timeslots: TimeSlots, observations: Observations,
                    final_schedule: Schedule, final_score: Score) -> None:
@@ -266,19 +314,28 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
     :param final_schedule: the final schedule returned from schedule
     :param final_score: the final score returned from schedule
     """
-    for site in Resource:
-        print('Schedule for %s:' % site.name)
-        print('\tTSIdx    ObsIdx')
-        for ts_offset in range(timeslots.num_timeslots_per_site):
-            ts_idx = ts_offset + site.value * timeslots.num_timeslots_per_site
-            if final_schedule[ts_idx] is not None:
-                print(f'\t    {ts_offset}         {final_schedule[ts_idx]}')
-    print(f'Score: {final_score}')
 
-    # Unschedulable observations.
-    unschedulable = [str(o) for o in range(observations.num_obs) if o not in final_schedule]
-    if len(unschedulable) > 0:
-        print(f'\nUnschedulable observations: {", ".join(unschedulable)}')
+    gn_sched = schedule_transform(final_schedule, observations, Resource.GN, timeslots)
+    gs_sched = schedule_transform(final_schedule, observations, Resource.GS, timeslots)
+
+    print(detailed_schedule("Gemini North:", gn_sched, observations,
+          timeslots.num_timeslots_per_site * timeslots.timeslot_length))
+    gn_obs = [obs_idx for obs_idx in final_schedule[:timeslots.num_timeslots_per_site] if obs_idx is not None]
+    gn_usage = len(gn_obs) / timeslots.num_timeslots_per_site * 100
+    gn_score = sum([observations.priority[obs_idx] for obs_idx in set(gn_obs)])
+    print(f'\tUsage: {len(gn_obs)}, {gn_usage}%, Fitness: {gn_score}')
+
+    print(detailed_schedule("Gemini South:", gs_sched, observations,
+          timeslots.num_timeslots_per_site * timeslots.timeslot_length))
+    gs_obs = [obs_idx for obs_idx in final_schedule[timeslots.num_timeslots_per_site:] if obs_idx is not None]
+    gs_usage = len(gs_obs) / timeslots.num_timeslots_per_site * 100
+    gs_score = sum([observations.priority[obs_idx] for obs_idx in set(gs_obs)])
+    print(f'\tUsage: {len(gs_obs)}, {gs_usage}%, Fitness: {gs_score}')
+
+    # Unscheduled observations.
+    unscheduled = [str(o) for o in range(observations.num_obs) if o not in final_schedule]
+    if len(unscheduled) > 0:
+        print(f'\nUnscheduled observations: {", ".join(unscheduled)}')
 
 
 def print_observations(obs: Observations, timeslots: TimeSlots) -> None:
@@ -305,21 +362,5 @@ def print_observations(obs: Observations, timeslots: TimeSlots) -> None:
               f"{int(obs.allocated_time[idx]):>9}  {obs.priority[idx]:>8}  "
               f"{' '.join(ss)}")
 
-
-# The Scheduler type
-Scheduler = Callable[[TimeSlots, Observations], Tuple[Schedule, Score]]
-
-
-if __name__ == '__main__':
-    timeslots = TimeSlots()
-    print(f"Created {timeslots.num_timeslots_per_site} timeslots of length "
-          f"{timeslots.timeslot_length} s each for each site...\n")
-    for r in Resource:
-        print(f"{r} timeslots")
-        print("-----------------")
-        for s in range(timeslots.num_timeslots_per_site):
-            timeslot = timeslots.get_timeslot(r, s)
-            print(f"{timeslot.start_time} s -> {timeslot.start_time + timeslots.timeslot_length - 1} s")
-        print()
 
 

@@ -78,7 +78,6 @@ def schedule(timeslots: TimeSlots, observations: Observations, out = None) -> Tu
                 if startslot_idx <= timeslot_idx < startslot_idx + \
                         int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length)):
                     expression += y[obs_idx][startslot_idx]
-        print(f"{timeslot_idx}: {expression}")
         solver.addConstr(expression <= 1)
 
     observations.calculate_priority()

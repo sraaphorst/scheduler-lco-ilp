@@ -52,7 +52,7 @@ def generate_random_data(num: int,
             start_slots_gs = [TS(i + num_timeslots_per_site) for i in range(num_timeslots_per_site)
                               if lb_time_constraint <= i * timeslot_length <= ub_time_constraint - obs_time]
         start_slots = start_slots_gn + start_slots_gs
-        print(f"R: {resource}, len={obs_time}, lb={lb_time_constraint}, ub={ub_time_constraint}, upperb={ub_time_constraint - obs_time}, gn={start_slots_gn}, gs={start_slots_gs}")
+        #print(f"R: {resource}, len={obs_time}, lb={lb_time_constraint}, ub={ub_time_constraint}, upperb={ub_time_constraint - obs_time}, gn={start_slots_gn}, gs={start_slots_gs}")
 
         observations.add_obs(band, resource, start_slots, obs_time, obs_time)
 
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     obs_time_lowers = [5]
     obs_time_uppers = [20]
     num_obss = [10]
-    granularities = [5]
+    granularities = [3]
     for stop_time in stop_times:
         for obs_time_lower in obs_time_lowers:
             for obs_time_upper in obs_time_uppers:

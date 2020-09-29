@@ -63,7 +63,7 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
                 # in this constraint if starting at startslot means that the observation will occupy
                 # timeslot (a_ikt = 1), and we omit it otherwise (a_ikt = 0)
                 if startslot_idx <= timeslot_idx < startslot_idx + \
-                        ceil(int(observations.obs_time[obs_idx] / timeslots.timeslot_length)):
+                        int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length)):
                     expression += y[obs_idx][startslot_idx]
         solver.Add(expression <= 1)
 
@@ -77,8 +77,7 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
     objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx] *
                               observations.obs_time[obs_idx]
                               for obs_idx in range(observations.num_obs)
-                              for ss in observations.start_slots[obs_idx]]) / \
-                         (timeslots.timeslot_length * timeslots.num_timeslots_per_site)
+                              for ss in observations.start_slots[obs_idx]])
     solver.Maximize(objective_function)
 
     # Run the solver.
@@ -103,7 +102,6 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
             # Check to see if this timeslot is in the start slots for this observation, and if so,
             # if it was selected via the decision variable as the start slot for this observation.
             if timeslot_idx in y[obs_idx] and y[obs_idx][timeslot_idx].solution_value() == 1:
-                # print(f'timeslot={timeslot_idx}, y[{obs_idx}][{timeslot_idx}]={y[obs_idx][timeslot_idx]}')
                 # This is the start slot for the observation. Fill in the consecutive slots needed to complete it.
                 # Consecutive slots needed:
                 for i in range(int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length))):

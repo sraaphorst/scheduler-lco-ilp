@@ -339,10 +339,11 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
     else:
         out.write(printable_schedule_gn + '\n')
 
-    gn_obs = [obs_idx for obs_idx in final_schedule[:timeslots.num_timeslots_per_site] if obs_idx is not None]
-    gn_usage = len(gn_obs) / timeslots.num_timeslots_per_site * 100
-    gn_score = sum([observations.priority[obs_idx] for obs_idx in set(gn_obs)])
-    gn_summary = f'\tUsage: {len(gn_obs)}, {gn_usage}%, Fitness: {gn_score}'
+    gn_obs = set([obs_idx for obs_idx in final_schedule[:timeslots.num_timeslots_per_site] if obs_idx is not None])
+    gn_usage = sum(observations.obs_time[obs_idx] for obs_idx in gn_obs)
+    gn_pct = gn_usage / (timeslots.num_timeslots_per_site * timeslots.timeslot_length) * 100
+    gn_score = sum([observations.priority[obs_idx] for obs_idx in gn_obs])
+    gn_summary = f'\tUsage: {gn_usage}, {gn_pct}%, Fitness: {gn_score}'
     if out is None:
         print(gn_summary + ('\n' * 3))
     else:
@@ -356,10 +357,11 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
     else:
         out.write(printable_schedule_gs + '\n')
 
-    gs_obs = [obs_idx for obs_idx in final_schedule[timeslots.num_timeslots_per_site:] if obs_idx is not None]
-    gs_usage = len(gs_obs) / timeslots.num_timeslots_per_site * 100
-    gs_score = sum([observations.priority[obs_idx] for obs_idx in set(gs_obs)])
-    gs_summary = f'\tUsage: {len(gs_obs)}, {gs_usage}%, Fitness: {gs_score}'
+    gs_obs = set([obs_idx for obs_idx in final_schedule[timeslots.num_timeslots_per_site:] if obs_idx is not None])
+    gs_usage = sum(observations.obs_time[obs_idx] for obs_idx in gs_obs)
+    gs_pct = gs_usage / (timeslots.num_timeslots_per_site * timeslots.timeslot_length) * 100
+    gs_score = sum([observations.priority[obs_idx] for obs_idx in gs_obs])
+    gs_summary = f'\tUsage: {gs_usage}, {gs_pct}%, Fitness: {gs_score}'
     if out is None:
         print(gs_summary)
     else:

@@ -4,8 +4,9 @@
 # the primary output formatting.
 
 from enum import IntEnum
-from typing import List, Union, Tuple, Callable
+from typing import List, Union, Tuple
 from dataclasses import dataclass
+from timed_function import timed_function
 
 import numpy as np
 
@@ -54,7 +55,7 @@ class TimeSlots:
     """
     A collection of TimeSlot objects.
     """
-    def __init__(self, timeslot_length: int = 5 * 60, num_timeslots_per_site: int = 6):
+    def __init__(self, timeslot_length: int = 5, num_timeslots_per_site: int = 6):
         """
         Create the collection of timeslots, which consist of a collection of TimeSlot
         objects as below for scheduling.
@@ -71,6 +72,8 @@ class TimeSlots:
 
         self.timeslots = []
         for r in Resource:
+            if r == Resource.Both:
+                continue
             for idx in range(num_timeslots_per_site):
                 self.timeslots.append(TimeSlot(r, idx * timeslot_length))
 
@@ -282,12 +285,15 @@ def schedule_transform(final_schedule: Schedule, observations: Observations, res
     return sched
 
 
-def detailed_schedule(name: str, schedule: GA_Schedule, observations: Observations, stop_time: int) -> str:
+def detailed_schedule(name: str, schedule: GA_Schedule, timeSlots: TimeSlots, observations: Observations,
+                      stop_time: int) -> str:
     line_start = '\n\t' if name is not None else '\n'
     data = name if name is not None else ''
 
     obs_prev_time = 0
-    for obs_start_time, obs_idx in schedule:
+    print(schedule)
+    for obs_start_time_slot, obs_idx in schedule:
+        obs_start_time = obs_start_time_slot * timeSlots.timeslot_length
         if obs_prev_time != obs_start_time:
             gap_size = int(obs_start_time - obs_prev_time)
             data += line_start + f'Gap of  {gap_size:>3} min{"s" if gap_size > 1 else ""}'
@@ -297,6 +303,7 @@ def detailed_schedule(name: str, schedule: GA_Schedule, observations: Observatio
                              f'obs_time={int(observations.obs_time[obs_idx]):>3}, ' \
                              f'priority={observations.priority[obs_idx]:>4}'
         obs_prev_time = obs_start_time + observations.obs_time[obs_idx]
+        print(f'Obs prev time: {obs_prev_time}')
 
     if obs_prev_time != stop_time:
         gap_size = int(stop_time - obs_prev_time)
@@ -306,7 +313,7 @@ def detailed_schedule(name: str, schedule: GA_Schedule, observations: Observatio
 
 
 def print_schedule(timeslots: TimeSlots, observations: Observations,
-                   final_schedule: Schedule, final_score: Score) -> None:
+                   final_schedule: Schedule, final_score: Score, out = None) -> None:
     """
     Given the execution of a call to schedule, print the results.
     :param timeslots: the TimeSlots object
@@ -318,24 +325,54 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
     gn_sched = schedule_transform(final_schedule, observations, Resource.GN, timeslots)
     gs_sched = schedule_transform(final_schedule, observations, Resource.GS, timeslots)
 
-    print(detailed_schedule("Gemini North:", gn_sched, observations,
-          timeslots.num_timeslots_per_site * timeslots.timeslot_length))
+    overall_score = f"Final score: {final_score}"
+    if out is None:
+        print(overall_score)
+    else:
+        out.write(overall_score + '\n')
+
+    ### GN ###
+    printable_schedule_gn = detailed_schedule("Gemini North:", gn_sched, timeslots, observations,
+                                              timeslots.num_timeslots_per_site * timeslots.timeslot_length)
+    if out is None:
+        print(printable_schedule_gn)
+    else:
+        out.write(printable_schedule_gn + '\n')
+
     gn_obs = [obs_idx for obs_idx in final_schedule[:timeslots.num_timeslots_per_site] if obs_idx is not None]
     gn_usage = len(gn_obs) / timeslots.num_timeslots_per_site * 100
     gn_score = sum([observations.priority[obs_idx] for obs_idx in set(gn_obs)])
-    print(f'\tUsage: {len(gn_obs)}, {gn_usage}%, Fitness: {gn_score}')
+    gn_summary = f'\tUsage: {len(gn_obs)}, {gn_usage}%, Fitness: {gn_score}'
+    if out is None:
+        print(gn_summary + ('\n' * 3))
+    else:
+        out.write(gn_summary + ('\n' * 4))
 
-    print(detailed_schedule("Gemini South:", gs_sched, observations,
-          timeslots.num_timeslots_per_site * timeslots.timeslot_length))
+    # *** GS ***
+    printable_schedule_gs = detailed_schedule("Gemini South:", gs_sched, timeslots, observations,
+                                              timeslots.num_timeslots_per_site * timeslots.timeslot_length)
+    if out is None:
+        print(printable_schedule_gs)
+    else:
+        out.write(printable_schedule_gs + '\n')
+
     gs_obs = [obs_idx for obs_idx in final_schedule[timeslots.num_timeslots_per_site:] if obs_idx is not None]
     gs_usage = len(gs_obs) / timeslots.num_timeslots_per_site * 100
     gs_score = sum([observations.priority[obs_idx] for obs_idx in set(gs_obs)])
-    print(f'\tUsage: {len(gs_obs)}, {gs_usage}%, Fitness: {gs_score}')
+    gs_summary = f'\tUsage: {len(gs_obs)}, {gs_usage}%, Fitness: {gs_score}'
+    if out is None:
+        print(gs_summary)
+    else:
+        out.write(gs_summary + '\n')
 
     # Unscheduled observations.
     unscheduled = [str(o) for o in range(observations.num_obs) if o not in final_schedule]
     if len(unscheduled) > 0:
-        print(f'\nUnscheduled observations: {", ".join(unscheduled)}')
+        unscheduled_summary = f'\nUnscheduled observations: {", ".join(unscheduled)}'
+        if out is None:
+            print(unscheduled_summary)
+        else:
+            out.write(unscheduled_summary + '\n')
 
 
 def print_observations(obs: Observations, timeslots: TimeSlots) -> None:

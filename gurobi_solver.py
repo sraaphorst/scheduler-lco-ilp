@@ -4,13 +4,14 @@
 
 from __future__ import print_function
 from math import ceil
+from time import monotonic
 
 from gurobipy import *
 
 from common import *
 
 
-def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule, Score]:
+def schedule(timeslots: TimeSlots, observations: Observations, out = None) -> Tuple[Schedule, Score]:
     """
     Given a set of timeslots and observations as defined in input_parameters,
     try to schedule as many observations as possible according to priority.
@@ -21,12 +22,17 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
     :param observations: the Observations object containing the list of observations
     :return: a tuple of Schedule as defined above, and the score for the schedule
     """
-
     # Note: Start slots run from 0 to 2 * NUM_SLOTS_PER_RESOURCE - 1, where each grouping of
     # i * NUM_SLOTS_PER_RESOURCE to (i+1) * NUM_SLOTS_PER_RESOURCE - 1 represents the slots
     # for resource i.
 
     # Enumerated timeslots: we want to work with the index of these objects.
+    if out is None:
+        print(f"*** Building model...")
+    else:
+        out.write(f"*** Building model...\n")
+    start_time = monotonic()
+
     enumerated_timeslots = list(enumerate(timeslots))
 
     # Turn off all output.
@@ -70,27 +76,70 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
                 # in this constraint if starting at startslot means that the observation will occupy
                 # timeslot (a_ikt = 1), and we omit it otherwise (a_ikt = 0)
                 if startslot_idx <= timeslot_idx < startslot_idx + \
-                        ceil(int(observations.obs_time[obs_idx] / timeslots.timeslot_length)):
+                        int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length)):
                     expression += y[obs_idx][startslot_idx]
+        print(f"{timeslot_idx}: {expression}")
         solver.addConstr(expression <= 1)
 
     observations.calculate_priority()
 
     # Create the objective function. Multiply each variable for the priority for the:
     # 1. observation metric
-    # 2. metric score for the timeslot observation.
+    # 2. metric score for the timeslot observation
+    # 3. the observation length for the observation
+    # Divide by the length of the semester.
+    # objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx]
+    #                           * observations.obs_time[obs_idx]
+    #                           for obs_idx in range(observations.num_obs)
+    #                           for ss in observations.start_slots[obs_idx]]) / \
+    #                      (timeslots.timeslot_length * timeslots.num_timeslots_per_site)
     objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx]
                               for obs_idx in range(observations.num_obs)
                               for ss in observations.start_slots[obs_idx]])
     solver.setObjective(objective_function, GRB.MAXIMIZE)
-
     solver.update()
-    solver.tune()
+
+    time_expr = f"*** Model complete: {monotonic() - start_time} s"
+    if out is None:
+        print(time_expr)
+    else:
+        out.write(time_expr + '\n')
+
+    # if out is None:
+    #     print("*** Tuning model...")
+    # else:
+    #     print("*** Tuning model...\n")
+    #
+    # start_time = monotonic()
+    # #solver.tune()
+    # time_expr =f"*** Tuning complete: {monotonic() - start_time} s"
+    # if out is None:
+    #     print(time_expr)
+    # else:
+    #     out.write(time_expr + '\n')
+
+    start_time = monotonic()
+    if out is None:
+        print("*** Solving model...")
+    else:
+        out.write("*** Solving model...\n")
     solver.optimize()
+
+    time_expr = f"*** Model solved: {monotonic() - start_time} s"
+    if out is None:
+        print(time_expr)
+    else:
+        out.write(time_expr + '\n')
 
     # Now get the score, which is the value of the objective function.
     # Right now, it is just a measure of the observations being scheduled (the score gets the priority of a
     # scheduled observation), but this will be much more complicated later on.
+    if out is None:
+        print("*** Translating model...")
+    else:
+        out.write("*** Translating model...\n")
+
+    start_time = monotonic()
     schedule_score = solver.getObjective().getValue()
 
     # for idx1 in range(len(y)):
@@ -110,4 +159,11 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
                 # print(f'timeslot={timeslot_idx}, y[{obs_idx}][{timeslot_idx}]={y[obs_idx][timeslot_idx]}')
                 for i in range(int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length))):
                     final_schedule[timeslot_idx + i] = obs_idx
+
+    time_expr = f"*** Translation done: {monotonic() - start_time} s"
+    if out is None:
+        print(time_expr)
+    else:
+        out.write(time_expr + '\n')
+
     return final_schedule, schedule_score

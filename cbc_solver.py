@@ -62,7 +62,7 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
                 # Thus, to simplify over LCO, instead of using a_ikt, we include Y_ik
                 # in this constraint if starting at startslot means that the observation will occupy
                 # timeslot (a_ikt = 1), and we omit it otherwise (a_ikt = 0)
-                if startslot_idx <= timeslot_idx < startslot_idx +\
+                if startslot_idx <= timeslot_idx < startslot_idx + \
                         ceil(int(observations.obs_time[obs_idx] / timeslots.timeslot_length)):
                     expression += y[obs_idx][startslot_idx]
         solver.Add(expression <= 1)
@@ -71,10 +71,14 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
 
     # Create the objective function. Multiply each variable for the priority for the:
     # 1. observation metric
-    # 2. metric score for the timeslot observation.
-    objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx]
+    # 2. metric score for the timeslot observation
+    # 3. the observation length for the observation
+    # Divide by the length of the semester.
+    objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx] *
+                              observations.obs_time[obs_idx]
                               for obs_idx in range(observations.num_obs)
-                              for ss in observations.start_slots[obs_idx]])
+                              for ss in observations.start_slots[obs_idx]]) / \
+                         (timeslots.timeslot_length * timeslots.num_timeslots_per_site)
     solver.Maximize(objective_function)
 
     # Run the solver.
@@ -105,5 +109,3 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
                 for i in range(int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length))):
                     final_schedule[timeslot_idx + i] = obs_idx
     return final_schedule, schedule_score
-
-

@@ -1,0 +1,263 @@
+*** TIME=4200, OBS_LB=45, OBS_UB=60 NUM_OBS=1200, GRANULARITY=5 ***
+*** Building model...
+*** Model complete: 1665.319119018 s
+*** Solving model...
+*** Model solved: 220.57506573299997 s
+*** Translating model...
+*** Translation done: 9.044940536000013 s
+Final score: 72.19785714285716
+Gemini North:
+	At time   0: Observation 1081, band=1, resource=GN  , obs_time= 45, priority=36.6
+	At time  45: Observation  286, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 105: Observation  138, band=1, resource=GN  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 155: Observation  608, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 205: Observation  105, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 265: Observation  107, band=1, resource=GN  , obs_time= 57, priority=36.6
+	Gap of    3 mins
+	At time 325: Observation  137, band=1, resource=Both, obs_time= 57, priority=36.6
+	Gap of    3 mins
+	At time 385: Observation  144, band=1, resource=Both, obs_time= 53, priority=36.6
+	Gap of    2 mins
+	At time 440: Observation  156, band=1, resource=GN  , obs_time= 51, priority=36.6
+	Gap of    4 mins
+	At time 495: Observation  168, band=1, resource=GN  , obs_time= 46, priority=36.6
+	Gap of    4 mins
+	At time 545: Observation  323, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 600: Observation  231, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 650: Observation   17, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 705: Observation  911, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 760: Observation  488, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 815: Observation 1140, band=1, resource=GN  , obs_time= 55, priority=36.6
+	At time 870: Observation  972, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 925: Observation  311, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 985: Observation  732, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 1040: Observation  905, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 1090: Observation  534, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 1145: Observation  962, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 1205: Observation  461, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 1265: Observation  296, band=1, resource=GN  , obs_time= 55, priority=36.6
+	At time 1320: Observation  631, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 1370: Observation  207, band=1, resource=GN  , obs_time= 55, priority=36.6
+	At time 1425: Observation  835, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 1485: Observation 1122, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 1540: Observation  185, band=1, resource=GN  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 1590: Observation  484, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 1645: Observation 1006, band=1, resource=GN  , obs_time= 45, priority=36.6
+	At time 1690: Observation  167, band=1, resource=GN  , obs_time= 45, priority=36.6
+	At time 1735: Observation  435, band=1, resource=Both, obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 1785: Observation  464, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 1840: Observation   90, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 1900: Observation  709, band=1, resource=GN  , obs_time= 55, priority=36.6
+	At time 1955: Observation  995, band=1, resource=GN  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 2005: Observation  162, band=1, resource=GN  , obs_time= 55, priority=36.6
+	At time 2060: Observation  741, band=1, resource=GN  , obs_time= 45, priority=36.6
+	At time 2105: Observation 1064, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 2165: Observation 1124, band=1, resource=GN  , obs_time= 45, priority=36.6
+	At time 2210: Observation  846, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 2265: Observation  671, band=1, resource=Both, obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 2315: Observation   62, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 2370: Observation  490, band=1, resource=GN  , obs_time= 55, priority=36.6
+	At time 2425: Observation  863, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 2475: Observation  574, band=1, resource=GN  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 2525: Observation  662, band=1, resource=GN  , obs_time= 45, priority=36.6
+	At time 2570: Observation  607, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 2620: Observation  106, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 2675: Observation   76, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 2730: Observation  298, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 2780: Observation  716, band=1, resource=GN  , obs_time= 55, priority=36.6
+	At time 2835: Observation  542, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 2890: Observation   56, band=1, resource=GN  , obs_time= 45, priority=36.6
+	At time 2935: Observation  543, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 2985: Observation 1048, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 3035: Observation   60, band=1, resource=GN  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 3085: Observation  742, band=1, resource=GN  , obs_time= 55, priority=36.6
+	At time 3140: Observation 1186, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 3195: Observation 1068, band=1, resource=GN  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 3245: Observation  293, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 3305: Observation  529, band=1, resource=Both, obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 3360: Observation  159, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 3420: Observation  343, band=1, resource=Both, obs_time= 45, priority=36.6
+	At time 3465: Observation  821, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 3520: Observation  135, band=1, resource=GN  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 3570: Observation  525, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 3630: Observation  586, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 3685: Observation  219, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 3745: Observation 1004, band=1, resource=Both, obs_time= 50, priority=36.6
+	At time 3795: Observation  403, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 3855: Observation  660, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 3910: Observation  746, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 3965: Observation  459, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 4025: Observation 1044, band=1, resource=GN  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 4080: Observation  754, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 4140: Observation  665, band=1, resource=GN  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	Usage: 4142.0, 98.61904761904762%, Fitness: 2854.799999999996
+
+Gemini South:
+	At time   0: Observation   11, band=1, resource=Both, obs_time= 48, priority=36.6
+	Gap of    2 mins
+	At time  50: Observation   24, band=1, resource=Both, obs_time= 48, priority=36.6
+	Gap of    2 mins
+	At time 100: Observation   35, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 155: Observation   99, band=1, resource=GS  , obs_time= 57, priority=36.6
+	Gap of   13 mins
+	At time 225: Observation  158, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 285: Observation  765, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 345: Observation  612, band=1, resource=Both, obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 400: Observation  708, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 455: Observation  492, band=1, resource=GS  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 510: Observation  553, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 565: Observation  300, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 625: Observation  977, band=1, resource=GS  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 680: Observation  719, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 735: Observation  983, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 795: Observation  870, band=1, resource=Both, obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 850: Observation  476, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 905: Observation  187, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 960: Observation  148, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 1015: Observation 1157, band=1, resource=Both, obs_time= 45, priority=36.6
+	At time 1060: Observation  788, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 1120: Observation  762, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 1180: Observation  702, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 1240: Observation  399, band=1, resource=Both, obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 1290: Observation  706, band=1, resource=GS  , obs_time= 50, priority=36.6
+	At time 1340: Observation  115, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 1400: Observation  394, band=1, resource=GS  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 1455: Observation  482, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 1510: Observation  873, band=1, resource=GS  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 1565: Observation  934, band=1, resource=GS  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 1620: Observation  489, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 1675: Observation 1017, band=1, resource=GS  , obs_time= 50, priority=36.6
+	At time 1725: Observation 1134, band=1, resource=GS  , obs_time= 45, priority=36.6
+	At time 1770: Observation  979, band=1, resource=GS  , obs_time= 45, priority=36.6
+	At time 1815: Observation  638, band=1, resource=GS  , obs_time= 45, priority=36.6
+	At time 1860: Observation  226, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 1915: Observation  122, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 1975: Observation  430, band=1, resource=GS  , obs_time= 45, priority=36.6
+	At time 2020: Observation  428, band=1, resource=Both, obs_time= 45, priority=36.6
+	At time 2065: Observation  604, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 2120: Observation  618, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 2175: Observation  487, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 2235: Observation  910, band=1, resource=GS  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 2285: Observation  289, band=1, resource=Both, obs_time= 50, priority=36.6
+	At time 2335: Observation 1055, band=1, resource=GS  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 2385: Observation  471, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 2440: Observation  349, band=1, resource=GS  , obs_time= 50, priority=36.6
+	At time 2490: Observation  140, band=1, resource=Both, obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 2540: Observation 1129, band=1, resource=Both, obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 2590: Observation  265, band=1, resource=GS  , obs_time= 50, priority=36.6
+	At time 2640: Observation  112, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 2700: Observation  756, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 2760: Observation 1159, band=1, resource=Both, obs_time= 55, priority=36.6
+	At time 2815: Observation  468, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 2875: Observation 1174, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 2935: Observation  573, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 2995: Observation  584, band=1, resource=GS  , obs_time= 45, priority=36.6
+	At time 3040: Observation 1015, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 3095: Observation  285, band=1, resource=GS  , obs_time= 50, priority=36.6
+	At time 3145: Observation  864, band=1, resource=GS  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 3195: Observation  628, band=1, resource=GS  , obs_time= 45, priority=36.6
+	At time 3240: Observation  409, band=1, resource=GS  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 3295: Observation  218, band=1, resource=GS  , obs_time= 50, priority=36.6
+	At time 3345: Observation  692, band=1, resource=GS  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 3395: Observation  691, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 3455: Observation 1190, band=1, resource=Both, obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 3510: Observation  797, band=1, resource=Both, obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 3560: Observation  154, band=1, resource=Both, obs_time= 45, priority=36.6
+	At time 3605: Observation  764, band=1, resource=GS  , obs_time= 45, priority=36.6
+	At time 3650: Observation  648, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 3705: Observation  190, band=1, resource=Both, obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 3755: Observation 1036, band=1, resource=GS  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 3805: Observation  839, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 3860: Observation  179, band=1, resource=GS  , obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 3915: Observation 1185, band=1, resource=GS  , obs_time= 55, priority=36.6
+	At time 3970: Observation  209, band=1, resource=GS  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 4020: Observation  686, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 4080: Observation  831, band=1, resource=GS  , obs_time= 59, priority=36.6
+	Gap of    1 min
+	At time 4140: Observation  857, band=1, resource=Both, obs_time= 59, priority=36.6
+	Gap of    1 min
+	Usage: 4143.0, 98.64285714285714%, Fitness: 2854.799999999996
+
+Unscheduled observations: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 57, 58, 59, 61, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 91, 92, 93, 94, 95, 96, 97, 98, 100, 101, 102, 103, 104, 108, 109, 110, 111, 113, 114, 116, 117, 118, 119, 120, 121, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 136, 139, 141, 142, 143, 145, 146, 147, 149, 150, 151, 152, 153, 155, 157, 160, 161, 163, 164, 165, 166, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 180, 181, 182, 183, 184, 186, 188, 189, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 208, 210, 211, 212, 213, 214, 215, 216, 217, 220, 221, 222, 223, 224, 225, 227, 228, 229, 230, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 287, 288, 290, 291, 292, 294, 295, 297, 299, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 344, 345, 346, 347, 348, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 395, 396, 397, 398, 400, 401, 402, 404, 405, 406, 407, 408, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 429, 431, 432, 433, 434, 436, 437, 438, 439, 440, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 460, 462, 463, 465, 466, 467, 469, 470, 472, 473, 474, 475, 477, 478, 479, 480, 481, 483, 485, 486, 491, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 526, 527, 528, 530, 531, 532, 533, 535, 536, 537, 538, 539, 540, 541, 544, 545, 546, 547, 548, 549, 550, 551, 552, 554, 555, 556, 557, 558, 559, 560, 561, 562, 563, 564, 565, 566, 567, 568, 569, 570, 571, 572, 575, 576, 577, 578, 579, 580, 581, 582, 583, 585, 587, 588, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 605, 606, 609, 610, 611, 613, 614, 615, 616, 617, 619, 620, 621, 622, 623, 624, 625, 626, 627, 629, 630, 632, 633, 634, 635, 636, 637, 639, 640, 641, 642, 643, 644, 645, 646, 647, 649, 650, 651, 652, 653, 654, 655, 656, 657, 658, 659, 661, 663, 664, 666, 667, 668, 669, 670, 672, 673, 674, 675, 676, 677, 678, 679, 680, 681, 682, 683, 684, 685, 687, 688, 689, 690, 693, 694, 695, 696, 697, 698, 699, 700, 701, 703, 704, 705, 707, 710, 711, 712, 713, 714, 715, 717, 718, 720, 721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 733, 734, 735, 736, 737, 738, 739, 740, 743, 744, 745, 747, 748, 749, 750, 751, 752, 753, 755, 757, 758, 759, 760, 761, 763, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 789, 790, 791, 792, 793, 794, 795, 796, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 822, 823, 824, 825, 826, 827, 828, 829, 830, 832, 833, 834, 836, 837, 838, 840, 841, 842, 843, 844, 845, 847, 848, 849, 850, 851, 852, 853, 854, 855, 856, 858, 859, 860, 861, 862, 865, 866, 867, 868, 869, 871, 872, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 906, 907, 908, 909, 912, 913, 914, 915, 916, 917, 918, 919, 920, 921, 922, 923, 924, 925, 926, 927, 928, 929, 930, 931, 932, 933, 935, 936, 937, 938, 939, 940, 941, 942, 943, 944, 945, 946, 947, 948, 949, 950, 951, 952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 963, 964, 965, 966, 967, 968, 969, 970, 971, 973, 974, 975, 976, 978, 980, 981, 982, 984, 985, 986, 987, 988, 989, 990, 991, 992, 993, 994, 996, 997, 998, 999, 1000, 1001, 1002, 1003, 1005, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1016, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1026, 1027, 1028, 1029, 1030, 1031, 1032, 1033, 1034, 1035, 1037, 1038, 1039, 1040, 1041, 1042, 1043, 1045, 1046, 1047, 1049, 1050, 1051, 1052, 1053, 1054, 1056, 1057, 1058, 1059, 1060, 1061, 1062, 1063, 1065, 1066, 1067, 1069, 1070, 1071, 1072, 1073, 1074, 1075, 1076, 1077, 1078, 1079, 1080, 1082, 1083, 1084, 1085, 1086, 1087, 1088, 1089, 1090, 1091, 1092, 1093, 1094, 1095, 1096, 1097, 1098, 1099, 1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107, 1108, 1109, 1110, 1111, 1112, 1113, 1114, 1115, 1116, 1117, 1118, 1119, 1120, 1121, 1123, 1125, 1126, 1127, 1128, 1130, 1131, 1132, 1133, 1135, 1136, 1137, 1138, 1139, 1141, 1142, 1143, 1144, 1145, 1146, 1147, 1148, 1149, 1150, 1151, 1152, 1153, 1154, 1155, 1156, 1158, 1160, 1161, 1162, 1163, 1164, 1165, 1166, 1167, 1168, 1169, 1170, 1171, 1172, 1173, 1175, 1176, 1177, 1178, 1179, 1180, 1181, 1182, 1183, 1184, 1187, 1188, 1189, 1191, 1192, 1193, 1194, 1195, 1196, 1197, 1198, 1199
+Time: 1897.970494651 s
+

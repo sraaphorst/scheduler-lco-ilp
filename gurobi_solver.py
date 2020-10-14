@@ -52,7 +52,7 @@ def schedule(timeslots: TimeSlots, observations: Observations, out = None) -> Tu
         y.append(yo)
         solver.update()
 
-    # *** CONSTRAINT TYPE 1 ***
+    # *** CONSTRAINT TYPE 1: Checked ***
     # First, no observation should be scheduled for more than one start.
     for obs_idx in range(observations.num_obs):
         expression = sum(y[obs_idx][ss.timeslot_idx] for ss in observations.start_slots[obs_idx]) <= 1
@@ -80,21 +80,20 @@ def schedule(timeslots: TimeSlots, observations: Observations, out = None) -> Tu
                     expression += y[obs_idx][startslot_idx]
         solver.addConstr(expression <= 1)
 
-    observations.calculate_priority()
-
     # Create the objective function. Multiply each variable for the priority for the:
     # 1. observation metric
     # 2. metric score for the timeslot observation
     # 3. the observation length for the observation
     # Divide by the length of the semester.
-    # objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx]
-    #                           * observations.obs_time[obs_idx]
-    #                           for obs_idx in range(observations.num_obs)
-    #                           for ss in observations.start_slots[obs_idx]]) / \
-    #                      (timeslots.timeslot_length * timeslots.num_timeslots_per_site)
     objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx]
+                              * observations.obs_time[obs_idx]
                               for obs_idx in range(observations.num_obs)
-                              for ss in observations.start_slots[obs_idx]])
+                              for ss in observations.start_slots[obs_idx]]) / \
+                         (timeslots.timeslot_length * timeslots.num_timeslots_per_site)
+
+    # objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx]
+    #                           for obs_idx in range(observations.num_obs)
+    #                           for ss in observations.start_slots[obs_idx]])
     solver.setObjective(objective_function, GRB.MAXIMIZE)
     solver.update()
 
@@ -146,8 +145,8 @@ def schedule(timeslots: TimeSlots, observations: Observations, out = None) -> Tu
     #         print(f'y[{idx1}][{idx2}] = {y[idx1][idx2]}')
     # print()
 
-    final_schedule = [None] * (timeslots.num_timeslots_per_site * len(Resource))
-    for timeslot_idx in range(timeslots.num_timeslots_per_site * len(Resource)):
+    final_schedule = [None] * (timeslots.num_timeslots_per_site * 2)
+    for timeslot_idx in range(timeslots.num_timeslots_per_site * 2):
         # Try to find a variable whose observation was scheduled for this timeslot.
         # Otherwise, the value for the timeslot will be None.
         for obs_idx in range(observations.num_obs):
@@ -155,7 +154,6 @@ def schedule(timeslots: TimeSlots, observations: Observations, out = None) -> Tu
             # if it was selected via the decision variable as the start slot for this observation.
             if timeslot_idx in y[obs_idx] and y[obs_idx][timeslot_idx].X == 1.0:
                 # This is the start slot for the observation. Fill in the consecutive slots needed to complete it.
-                # print(f'timeslot={timeslot_idx}, y[{obs_idx}][{timeslot_idx}]={y[obs_idx][timeslot_idx]}')
                 for i in range(int(ceil(observations.obs_time[obs_idx] / timeslots.timeslot_length))):
                     final_schedule[timeslot_idx + i] = obs_idx
 

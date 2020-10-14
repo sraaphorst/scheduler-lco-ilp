@@ -1,0 +1,39 @@
+*** TIME=600, OBS_LB=15, OBS_UB=480 NUM_OBS=100, GRANULARITY=1 ***
+*** Building model...
+*** Model complete: 44.65861609300009 s
+*** Solving model...
+*** Model solved: 74.39146779600014 s
+*** Translating model...
+*** Translation done: 0.2955146730000706 s
+Final score: 466.20000000000005
+Gemini North:
+	At time   0: Observation   57, band=1, resource=GN  , obs_time=157, priority=36.6
+	At time 157: Observation   44, band=1, resource=GN  , obs_time=129, priority=36.6
+	At time 286: Observation   52, band=1, resource=GN  , obs_time= 22, priority=36.6
+	At time 308: Observation   82, band=3, resource=GN  , obs_time= 19, priority= 5.4
+	Gap of    1 min
+	At time 328: Observation   86, band=1, resource=GN  , obs_time=130, priority=36.6
+	Gap of    2 mins
+	At time 460: Observation   31, band=1, resource=GN  , obs_time= 51, priority=36.6
+	Gap of    3 mins
+	At time 514: Observation    2, band=1, resource=Both, obs_time= 86, priority=36.6
+	Usage: 594.0, 99.0%, Fitness: 225.0
+
+Gemini South:
+	At time   0: Observation    4, band=1, resource=GS  , obs_time= 65, priority=36.6
+	At time  65: Observation   98, band=2, resource=GS  , obs_time= 33, priority=15.8
+	At time  98: Observation   24, band=1, resource=Both, obs_time=127, priority=36.6
+	Gap of    1 min
+	At time 226: Observation   83, band=2, resource=GS  , obs_time= 33, priority=15.8
+	At time 259: Observation    0, band=2, resource=GS  , obs_time= 35, priority=15.8
+	At time 294: Observation   47, band=1, resource=GS  , obs_time= 47, priority=36.6
+	Gap of    1 min
+	At time 342: Observation    9, band=3, resource=Both, obs_time= 15, priority= 5.4
+	At time 357: Observation   35, band=1, resource=Both, obs_time= 96, priority=36.6
+	At time 453: Observation   11, band=1, resource=Both, obs_time=128, priority=36.6
+	At time 581: Observation   62, band=3, resource=GS  , obs_time= 19, priority= 5.4
+	Usage: 598.0, 99.66666666666667%, Fitness: 241.20000000000002
+
+Unscheduled observations: 1, 3, 5, 6, 7, 8, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 43, 45, 46, 48, 49, 50, 51, 53, 54, 55, 56, 58, 59, 60, 61, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 99
+Time: 119.6466690039997 s
+

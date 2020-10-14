@@ -6,7 +6,6 @@
 from enum import IntEnum
 from typing import List, Union, Tuple
 from dataclasses import dataclass
-from timed_function import timed_function
 
 import numpy as np
 
@@ -151,116 +150,29 @@ class Observations:
         Right now, this is a mix of numpy and python as I think we need constructs from both.
 
         num_obs - the number of observations
-        band - an array of band ('1', '2', '3', '4' as per Bryan's representation below) for observation i
-        completed - the current completion fraction
-        used_time - the time used so far
-        allocation_time - the total time allocation
         obs_time - the length of the observation
-        allocated - the time allocated for the observation
         start_slot_idxs - a list of timeslot indices representing what timeslots the observation can
-                        can be observed at
-        priority - the priority for time slice t
+                        can be observed at and their score for each time slot
+        priority - the priority for each time slot (either 0 or a constant)
         """
         self.num_obs = 0
+        self.name = np.empty((0,), dtype=str)
         self.resource = np.empty((0,), dtype=Resource)
-        self.band = np.empty((0,), dtype=str)
-        self.completed = np.empty((0,), dtype=float)
-        self.used_time = np.empty((0,), dtype=float)
-        self.allocated_time = np.empty((0,), dtype=float)
         self.obs_time = np.empty((0,), dtype=float)
         self.start_slots = []
         self.priority = np.empty((0,), dtype=float)
 
-        self.params = {'1': {'m1': 1.406, 'b1': 2.0, 'm2': 0.50, 'b2': 0.5, 'xb': 0.8, 'xb0': 0.0, 'xc0': 0.0},
-                       '2': {'m1': 1.406, 'b1': 1.0, 'm2': 0.50, 'b2': 0.5, 'xb': 0.8, 'xb0': 0.0, 'xc0': 0.0},
-                       '3': {'m1': 1.406, 'b1': 0.0, 'm2': 0.50, 'b2': 0.5, 'xb': 0.8, 'xb0': 0.0, 'xc0': 0.0},
-                       '4': {'m1': 0.00, 'b1': 0.0, 'm2': 0.00, 'b2': 0.0, 'xb': 0.8, 'xb0': 0.0, 'xc0': 0.0},
-                       }
-
-        # Now spread the metric to avoid band overlaps
-        # m2 = {'3': 0.5, '2': 3.0, '1':10.0} # use with b1*r where r=3
-        m2 = {'3': 1.0, '2': 6.0, '1': 20.0}  # use with b1 + 5.
-        xb = 0.8
-        b1 = 0.2
-        for band in ['3', '2', '1']:
-            b2 = b1 + 5. - m2[band]
-            m1 = (m2[band] * xb + b2) / xb ** 2
-            self.params[band]['m1'] = m1
-            self.params[band]['m2'] = m2[band]
-            self.params[band]['b1'] = b1
-            self.params[band]['b2'] = b2
-            self.params[band]['xb'] = xb
-            b1 += m2[band] * 1.0 + b2
-
-    def add_obs(self, band: str, resource: Resource, start_slot_idx: List[TS], obs_time: float,
-                allocated_time=None) -> None:
+    def add_obs(self, name: str, resource: Resource, start_slot_idx: List[TS], obs_time: float, priority: float) -> None:
         """
         Add an observation to the collection of observations.
-        :param band: the band of the observation: a string of 1, 2, or 3
-        :param start_slot_idx: a list of TS data objects, which are TimeSlots and metric scores.
-        :param obs_time: the observation time
-        :param allocated_time: the allocated time
         """
-        assert (allocated_time != 0)
-        self.band = np.append(self.band, band)
+        self.name = np.append(self.name, name)
         self.resource = np.append(self.resource, resource)
         self.start_slots.append(start_slot_idx)
-        self.used_time = np.append(self.used_time, 0)
-        self.allocated_time = np.append(self.allocated_time, obs_time if allocated_time is None else allocated_time)
         self.obs_time = np.append(self.obs_time, obs_time)
         self.num_obs += 1
+        self.priority = np.append(self.priority, priority)
 
-    def is_done(self, id: int) -> bool:
-        return self.used_time[id] >= self.obs_time[id]
-
-    def _calculate_completion(self) -> None:
-        """
-        Calculate the completion of the observations.
-        This is a simplification that expects the observation to take up (at least) the entire allocated time.
-        """
-        time = (self.used_time + self.obs_time) / self.allocated_time
-        self.completed = np.where(time > 1., 1., time)
-
-    def __len__(self):
-        return self.num_obs
-
-    def calculate_priority(self) -> None:
-        """
-        Compute the priority as a function of completeness fraction and band for the objective function.
-
-        Parameters
-            completion: array/list of program completion fractions
-            band: integer array of bands for each program
-
-        By Bryan Miller, 2020.
-        """
-        # Calculate the completion for all observations.
-        self._calculate_completion()
-
-        nn = len(self.completed)
-        metric = np.zeros(nn)
-        for ii in range(nn):
-            sband = str(self.band[ii])
-
-            # If Band 3, then the Band 3 min fraction is used for xb
-            if self.band[ii] == 3:
-                xb = 0.8
-            else:
-                xb = self.params[sband]['xb']
-
-            # Determine the intercept for the second piece (b2) so that the functions are continuous
-            b2 = self.params[sband]['b2'] + self.params[sband]['xb0'] + self.params[sband]['b1']
-
-            # Finally, calculate piecewise the metric.
-            if self.completed[ii] == 0.:
-                metric[ii] = 0.0
-            elif self.completed[ii] < xb:
-                metric[ii] = self.params[sband]['m1'] * self.completed[ii] ** 2 + self.params[sband]['b1']
-            elif self.completed[ii] < 1.0:
-                metric[ii] = self.params[sband]['m2'] * self.completed[ii] + b2
-            else:
-                metric[ii] = self.params[sband]['m2'] * 1.0 + b2 + self.params[sband]['xc0']
-        self.priority = metric
 
 GA_Schedule = List[Tuple[int, int]]
 
@@ -291,22 +203,19 @@ def detailed_schedule(name: str, schedule: GA_Schedule, timeSlots: TimeSlots, ob
     data = name if name is not None else ''
 
     obs_prev_time = 0
-    print(schedule)
     for obs_start_time_slot, obs_idx in schedule:
         obs_start_time = obs_start_time_slot * timeSlots.timeslot_length
-        if obs_prev_time != obs_start_time:
-            gap_size = int(obs_start_time - obs_prev_time)
+        gap_size = int(obs_start_time - obs_prev_time)
+        if gap_size > 0e-3:
             data += line_start + f'Gap of  {gap_size:>3} min{"s" if gap_size > 1 else ""}'
-        data += line_start + f'At time {obs_start_time:>3}: Observation {obs_idx:>4}, ' \
-                             f'band={int(observations.band[obs_idx])}, ' \
+        data += line_start + f'At time {obs_start_time:>3}: Observation {observations.name[obs_idx]:<15}, ' \
                              f'resource={Resource(observations.resource[obs_idx]).name:<4}, ' \
                              f'obs_time={int(observations.obs_time[obs_idx]):>3}, ' \
                              f'priority={observations.priority[obs_idx]:>4}'
         obs_prev_time = obs_start_time + observations.obs_time[obs_idx]
-        print(f'Obs prev time: {obs_prev_time}')
 
-    if obs_prev_time != stop_time:
-        gap_size = int(stop_time - obs_prev_time)
+    gap_size = int(stop_time - obs_prev_time)
+    if gap_size > 0e-3:
         data += line_start + f'Gap of  {gap_size:>3} min{"s" if gap_size > 1 else ""}'
 
     return data
@@ -345,9 +254,9 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
     gn_score = sum([observations.priority[obs_idx] for obs_idx in gn_obs])
     gn_summary = f'\tUsage: {gn_usage}, {gn_pct}%, Fitness: {gn_score}'
     if out is None:
-        print(gn_summary + ('\n' * 3))
+        print(gn_summary + '\n')
     else:
-        out.write(gn_summary + ('\n' * 4))
+        out.write(gn_summary + ('\n' * 2))
 
     # *** GS ***
     printable_schedule_gs = detailed_schedule("Gemini South:", gs_sched, timeslots, observations,
@@ -360,7 +269,8 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
     gs_obs = set([obs_idx for obs_idx in final_schedule[timeslots.num_timeslots_per_site:] if obs_idx is not None])
     gs_usage = sum(observations.obs_time[obs_idx] for obs_idx in gs_obs)
     gs_pct = gs_usage / (timeslots.num_timeslots_per_site * timeslots.timeslot_length) * 100
-    gs_score = sum([observations.priority[obs_idx] for obs_idx in gs_obs])
+    #gs_score = sum([observations.priority[obs_idx] for obs_idx in gs_obs])
+    gs_score = sum([observations.priority[obs_idx] * observations.obs_time[obs_idx] for obs_idx in gs_obs]) / (timeslots.num_timeslots_per_site * timeslots.timeslot_length)
     gs_summary = f'\tUsage: {gs_usage}, {gs_pct}%, Fitness: {gs_score}'
     if out is None:
         print(gs_summary)
@@ -385,7 +295,7 @@ def print_observations(obs: Observations, timeslots: TimeSlots) -> None:
     :param slots: the TimeSlots object containing timeslot information
     """
     print("Observations:")
-    print("Index  Band  ObsTime  AllocTime  Priority  StartSlots")
+    print("Index  ObsTime Priority  StartSlots")
     for idx in range(obs.num_obs):
         prev_site = 0
         ss = []
@@ -397,8 +307,7 @@ def print_observations(obs: Observations, timeslots: TimeSlots) -> None:
                 ss.append('  |||  ')
                 prev_site = site
             ss.append(f"{Resource(site).name}{site_slot}({slot_metric})")
-        print(f"{idx:>5}  {obs.band[idx]:>4}  {int(obs.obs_time[idx]):>7}  "
-              f"{int(obs.allocated_time[idx]):>9}  {obs.priority[idx]:>8}  "
+        print(f"{idx:>5}  {int(obs.obs_time[idx]):>7} {obs.priority[idx]:>8}  "
               f"{' '.join(ss)}")
 
 

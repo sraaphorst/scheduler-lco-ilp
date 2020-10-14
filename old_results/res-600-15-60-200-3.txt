@@ -1,0 +1,86 @@
+*** TIME=600, OBS_LB=15, OBS_UB=60 NUM_OBS=200, GRANULARITY=3 ***
+*** Building model...
+*** Model complete: 13.514238029999888 s
+*** Solving model...
+*** Model solved: 5.578016722000029 s
+*** Translating model...
+*** Translation done: 0.36414508199982265 s
+Final score: 1433.1999999999994
+Gemini North:
+	At time   0: Observation   11, band=1, resource=GN  , obs_time= 24, priority=36.6
+	At time  24: Observation   58, band=1, resource=GN  , obs_time= 39, priority=36.6
+	At time  63: Observation  176, band=1, resource=GN  , obs_time= 22, priority=36.6
+	Gap of    2 mins
+	At time  87: Observation  170, band=1, resource=GN  , obs_time= 24, priority=36.6
+	Gap of    3 mins
+	At time 114: Observation   54, band=1, resource=GN  , obs_time= 32, priority=36.6
+	Gap of    4 mins
+	At time 150: Observation   42, band=1, resource=GN  , obs_time= 29, priority=36.6
+	Gap of    1 min
+	At time 180: Observation  198, band=1, resource=GN  , obs_time= 37, priority=36.6
+	Gap of    2 mins
+	At time 219: Observation   29, band=2, resource=GN  , obs_time= 18, priority=15.8
+	At time 237: Observation  187, band=1, resource=GN  , obs_time= 39, priority=36.6
+	At time 276: Observation  164, band=1, resource=Both, obs_time= 17, priority=36.6
+	Gap of    1 min
+	At time 294: Observation   82, band=1, resource=GN  , obs_time= 23, priority=36.6
+	Gap of    1 min
+	At time 318: Observation   23, band=1, resource=GN  , obs_time= 32, priority=36.6
+	Gap of    1 min
+	At time 351: Observation  135, band=1, resource=GN  , obs_time= 31, priority=36.6
+	Gap of    2 mins
+	At time 384: Observation   16, band=1, resource=GN  , obs_time= 26, priority=36.6
+	Gap of    1 min
+	At time 411: Observation   60, band=2, resource=Both, obs_time= 17, priority=15.8
+	Gap of    1 min
+	At time 429: Observation   48, band=1, resource=GN  , obs_time= 40, priority=36.6
+	Gap of    2 mins
+	At time 471: Observation  179, band=1, resource=GN  , obs_time= 39, priority=36.6
+	At time 510: Observation   49, band=1, resource=GN  , obs_time= 15, priority=36.6
+	At time 525: Observation  193, band=1, resource=GN  , obs_time= 17, priority=36.6
+	Gap of    1 min
+	At time 543: Observation  129, band=1, resource=GN  , obs_time= 34, priority=36.6
+	Gap of    2 mins
+	At time 579: Observation   68, band=1, resource=GN  , obs_time= 20, priority=36.6
+	Gap of    1 min
+	Usage: 575.0, 95.83333333333334%, Fitness: 727.0000000000002
+
+Gemini South:
+	At time   0: Observation   71, band=1, resource=GS  , obs_time= 27, priority=36.6
+	At time  27: Observation  160, band=1, resource=GS  , obs_time= 32, priority=36.6
+	Gap of    1 min
+	At time  60: Observation  162, band=1, resource=GS  , obs_time= 27, priority=36.6
+	At time  87: Observation   70, band=1, resource=GS  , obs_time= 29, priority=36.6
+	Gap of    1 min
+	At time 117: Observation  177, band=1, resource=Both, obs_time= 41, priority=36.6
+	Gap of    1 min
+	At time 159: Observation  197, band=2, resource=Both, obs_time= 18, priority=15.8
+	Gap of    3 mins
+	At time 180: Observation  147, band=1, resource=Both, obs_time= 15, priority=36.6
+	At time 195: Observation   79, band=1, resource=Both, obs_time= 24, priority=36.6
+	At time 219: Observation    2, band=1, resource=Both, obs_time= 23, priority=36.6
+	Gap of    1 min
+	At time 243: Observation   85, band=1, resource=Both, obs_time= 20, priority=36.6
+	Gap of    1 min
+	At time 264: Observation    4, band=1, resource=GS  , obs_time= 21, priority=36.6
+	At time 285: Observation  195, band=1, resource=GS  , obs_time= 37, priority=36.6
+	Gap of    2 mins
+	At time 324: Observation   92, band=1, resource=GS  , obs_time= 36, priority=36.6
+	At time 360: Observation  131, band=1, resource=Both, obs_time= 40, priority=36.6
+	Gap of    2 mins
+	At time 402: Observation   17, band=1, resource=Both, obs_time= 23, priority=36.6
+	Gap of    1 min
+	At time 426: Observation   15, band=1, resource=Both, obs_time= 39, priority=36.6
+	At time 465: Observation   38, band=2, resource=Both, obs_time= 17, priority=15.8
+	Gap of    1 min
+	At time 483: Observation   89, band=1, resource=Both, obs_time= 15, priority=36.6
+	At time 498: Observation    0, band=2, resource=GS  , obs_time= 17, priority=15.8
+	Gap of    1 min
+	At time 516: Observation   94, band=1, resource=GS  , obs_time= 41, priority=36.6
+	Gap of    1 min
+	At time 558: Observation  126, band=1, resource=GS  , obs_time= 42, priority=36.6
+	Usage: 584.0, 97.33333333333334%, Fitness: 706.2000000000003
+
+Unscheduled observations: 1, 3, 5, 6, 7, 8, 9, 10, 12, 13, 14, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 41, 43, 44, 45, 46, 47, 50, 51, 52, 53, 55, 56, 57, 59, 61, 62, 63, 64, 65, 66, 67, 69, 72, 73, 74, 75, 76, 77, 78, 80, 81, 83, 84, 86, 87, 88, 90, 91, 93, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 127, 128, 130, 132, 133, 134, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 163, 165, 166, 167, 168, 169, 171, 172, 173, 174, 175, 178, 180, 181, 182, 183, 184, 185, 186, 188, 189, 190, 191, 192, 194, 196, 199
+Time: 48.2774617770001 s
+

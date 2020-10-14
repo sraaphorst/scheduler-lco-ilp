@@ -1,0 +1,80 @@
+*** TIME=600, OBS_LB=15, OBS_UB=120 NUM_OBS=200, GRANULARITY=5 ***
+*** Building model...
+*** Model complete: 6.043738157000007 s
+*** Solving model...
+*** Model solved: 5.772337924999647 s
+*** Translating model...
+*** Translation done: 0.17902619100004813 s
+Final score: 1177.0
+Gemini North:
+	At time   0: Observation  168, band=1, resource=GN  , obs_time= 23, priority=36.6
+	Gap of    2 mins
+	At time  25: Observation  180, band=1, resource=GN  , obs_time= 46, priority=36.6
+	Gap of    4 mins
+	At time  75: Observation   23, band=1, resource=GN  , obs_time= 17, priority=36.6
+	Gap of    3 mins
+	At time  95: Observation  116, band=1, resource=GN  , obs_time= 41, priority=36.6
+	Gap of    4 mins
+	At time 140: Observation   31, band=1, resource=GN  , obs_time= 24, priority=36.6
+	Gap of    1 min
+	At time 165: Observation  190, band=1, resource=Both, obs_time= 54, priority=36.6
+	Gap of    1 min
+	At time 220: Observation   44, band=1, resource=GN  , obs_time= 43, priority=36.6
+	Gap of    2 mins
+	At time 265: Observation  185, band=1, resource=GN  , obs_time= 51, priority=36.6
+	Gap of    4 mins
+	At time 320: Observation  167, band=1, resource=GN  , obs_time= 21, priority=36.6
+	Gap of    4 mins
+	At time 345: Observation  130, band=1, resource=GN  , obs_time= 50, priority=36.6
+	At time 395: Observation   62, band=1, resource=GN  , obs_time= 49, priority=36.6
+	Gap of    1 min
+	At time 445: Observation   43, band=2, resource=Both, obs_time= 25, priority=15.8
+	At time 470: Observation  198, band=1, resource=Both, obs_time= 18, priority=36.6
+	Gap of    2 mins
+	At time 490: Observation   58, band=1, resource=GN  , obs_time= 20, priority=36.6
+	At time 510: Observation   92, band=1, resource=Both, obs_time= 15, priority=36.6
+	Gap of   10 mins
+	At time 535: Observation  158, band=1, resource=GN  , obs_time= 38, priority=36.6
+	Gap of    2 mins
+	At time 575: Observation   18, band=1, resource=GN  , obs_time= 25, priority=36.6
+	Usage: 560.0, 93.33333333333333%, Fitness: 601.4000000000002
+
+Gemini South:
+	At time   0: Observation  114, band=1, resource=GS  , obs_time= 56, priority=36.6
+	Gap of    4 mins
+	At time  60: Observation   56, band=1, resource=GS  , obs_time= 32, priority=36.6
+	Gap of    3 mins
+	At time  95: Observation   98, band=2, resource=GS  , obs_time= 19, priority=15.8
+	Gap of    1 min
+	At time 115: Observation   51, band=1, resource=Both, obs_time= 31, priority=36.6
+	Gap of    4 mins
+	At time 150: Observation   86, band=1, resource=GS  , obs_time= 16, priority=36.6
+	Gap of    4 mins
+	At time 170: Observation    0, band=2, resource=GS  , obs_time= 20, priority=15.8
+	At time 190: Observation  199, band=2, resource=GS  , obs_time= 16, priority=15.8
+	Gap of    4 mins
+	At time 210: Observation   35, band=1, resource=Both, obs_time= 35, priority=36.6
+	At time 245: Observation   11, band=1, resource=Both, obs_time= 43, priority=36.6
+	Gap of    2 mins
+	At time 290: Observation    2, band=1, resource=Both, obs_time= 32, priority=36.6
+	Gap of    3 mins
+	At time 325: Observation  160, band=1, resource=GS  , obs_time= 41, priority=36.6
+	Gap of    4 mins
+	At time 370: Observation  117, band=1, resource=Both, obs_time= 15, priority=36.6
+	At time 385: Observation  135, band=1, resource=Both, obs_time= 53, priority=36.6
+	Gap of    2 mins
+	At time 440: Observation    4, band=1, resource=GS  , obs_time= 27, priority=36.6
+	Gap of    3 mins
+	At time 470: Observation   83, band=2, resource=GS  , obs_time= 19, priority=15.8
+	Gap of    1 min
+	At time 490: Observation  193, band=1, resource=GS  , obs_time= 34, priority=36.6
+	Gap of    1 min
+	At time 525: Observation  182, band=1, resource=Both, obs_time= 52, priority=36.6
+	Gap of    3 mins
+	At time 580: Observation   72, band=1, resource=GS  , obs_time= 16, priority=36.6
+	Gap of    4 mins
+	Usage: 557.0, 92.83333333333333%, Fitness: 575.6000000000001
+
+Unscheduled observations: 1, 3, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 45, 46, 47, 48, 49, 50, 52, 53, 54, 55, 57, 59, 60, 61, 63, 64, 65, 66, 67, 68, 69, 70, 71, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 84, 85, 87, 88, 89, 90, 91, 93, 94, 95, 96, 97, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 131, 132, 133, 134, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 159, 161, 162, 163, 164, 165, 166, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 181, 183, 184, 186, 187, 188, 189, 191, 192, 194, 195, 196, 197
+Time: 12.156565611000133 s
+

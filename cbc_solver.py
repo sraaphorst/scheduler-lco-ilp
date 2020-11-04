@@ -67,7 +67,7 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
                     expression += y[obs_idx][startslot_idx]
         solver.Add(expression <= 1)
 
-    observations.calculate_priority()
+#    observations.calculate_priority()
 
     # Create the objective function. Multiply each variable for the priority for the:
     # 1. observation metric
@@ -77,7 +77,8 @@ def schedule(timeslots: TimeSlots, observations: Observations) -> Tuple[Schedule
     objective_function = sum([observations.priority[obs_idx] * ss.metric_score * y[obs_idx][ss.timeslot_idx] *
                               observations.obs_time[obs_idx]
                               for obs_idx in range(observations.num_obs)
-                              for ss in observations.start_slots[obs_idx]])
+                              for ss in observations.start_slots[obs_idx]]) / \
+                         (timeslots.timeslot_length * timeslots.num_timeslots_per_site)
     solver.Maximize(objective_function)
 
     # Run the solver.

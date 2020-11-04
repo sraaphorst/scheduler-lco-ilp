@@ -10,8 +10,8 @@ from astropy.time import Time
 from defaults import *
 
 # Alternate between CBC and Gurobi by switching the following imports:
-# from cbc_solver import *
-from gurobi_solver import *
+from cbc_solver import *
+# from gurobi_solver import *
 
 from random import random, randrange, seed
 

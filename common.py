@@ -234,12 +234,6 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
     gn_sched = schedule_transform(final_schedule, observations, Resource.GN, timeslots)
     gs_sched = schedule_transform(final_schedule, observations, Resource.GS, timeslots)
 
-    overall_score = f"Final score: {final_score}"
-    if out is None:
-        print(overall_score)
-    else:
-        out.write(overall_score + '\n')
-
     ### GN ###
     printable_schedule_gn = detailed_schedule("Gemini North:", gn_sched, timeslots, observations,
                                               timeslots.num_timeslots_per_site * timeslots.timeslot_length)
@@ -251,8 +245,8 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
     gn_obs = set([obs_idx for obs_idx in final_schedule[:timeslots.num_timeslots_per_site] if obs_idx is not None])
     gn_usage = sum(observations.obs_time[obs_idx] for obs_idx in gn_obs)
     gn_pct = gn_usage / (timeslots.num_timeslots_per_site * timeslots.timeslot_length) * 100
-    gn_score = sum([observations.priority[obs_idx] for obs_idx in gn_obs])
-    gn_summary = f'\tUsage: {gn_usage}, {gn_pct}%, Fitness: {gn_score}'
+    # gn_score = sum([observations.priority[obs_idx] for obs_idx in gn_obs])
+    gn_summary = f'\tUsage: {gn_usage}, {gn_pct}%, Fitness: {final_score}'
     if out is None:
         print(gn_summary + '\n')
     else:
@@ -271,11 +265,17 @@ def print_schedule(timeslots: TimeSlots, observations: Observations,
     gs_pct = gs_usage / (timeslots.num_timeslots_per_site * timeslots.timeslot_length) * 100
     #gs_score = sum([observations.priority[obs_idx] for obs_idx in gs_obs])
     gs_score = sum([observations.priority[obs_idx] * observations.obs_time[obs_idx] for obs_idx in gs_obs]) / (timeslots.num_timeslots_per_site * timeslots.timeslot_length)
-    gs_summary = f'\tUsage: {gs_usage}, {gs_pct}%, Fitness: {gs_score}'
+    gs_summary = f'\tUsage: {gs_usage}, {gs_pct}%'
     if out is None:
         print(gs_summary)
     else:
         out.write(gs_summary + '\n')
+
+    overall_score = f"Final score: {final_score}"
+    if out is None:
+        print(overall_score)
+    else:
+        out.write(overall_score + '\n')
 
     # Unscheduled observations.
     unscheduled = [str(o) for o in range(observations.num_obs) if o not in final_schedule]
